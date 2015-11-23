@@ -36,11 +36,13 @@ public class BinaryExpr extends NodeImp implements Expr, Swapable {
 	@Override
 	public StringBuilder prettyPrint(StringBuilder sb) {
 		// TODO Auto-generated method stub
+		sb.append("(");
 		l.prettyPrint(sb);
     	sb.append(" ");
 		sb.append(op);
     	sb.append(" ");
 		r.prettyPrint(sb);
+		sb.append(")");
 		return sb;
 	}
 	
