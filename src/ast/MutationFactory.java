@@ -17,7 +17,7 @@ public class MutationFactory {
 
     public static Mutation getReplace() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new Replace();
     }
 
     public static Mutation getTransform() {
