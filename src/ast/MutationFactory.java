@@ -22,7 +22,7 @@ public class MutationFactory {
 
     public static Mutation getTransform() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new Transform();
     }
 
     public static Mutation getInsert() {

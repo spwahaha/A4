@@ -1,1 +1,1 @@
-{ENERGY > SIZE * 400 and SIZE < 7} --> grow;
+{ENERGY > SIZE * 400 and SIZE < 7} --> serve[2];

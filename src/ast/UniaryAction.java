@@ -33,6 +33,14 @@ public class UniaryAction extends Action implements Node{
 		sb.append("]");
 		return sb;
 	}
+	
+	@Override
+	public Node copy() {
+		// TODO Auto-generated method stub
+		return new UniaryAction(this.kind, this.index);
+	}
+	
+	
 
 	
 }

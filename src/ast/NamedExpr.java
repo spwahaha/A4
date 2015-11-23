@@ -4,7 +4,7 @@ package ast;
 public class NamedExpr extends NodeImp implements Expr {
 	
 	protected Kind kind;
-	
+	// only Smell
 	public NamedExpr(Kind kind){
 		this.kind = kind;
 	}
@@ -31,8 +31,8 @@ public class NamedExpr extends NodeImp implements Expr {
 	    NEARBY("nearby"),
 	    AHEAD("ahead"),
 	    RANDOM("random"),
-	    SMELL("smell"),
-	    MEM("mem");
+	    MEM("mem"),
+	    SMELL("smell");
 		
 		String rep;
 		Kind(String rep){
