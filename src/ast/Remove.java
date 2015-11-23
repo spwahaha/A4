@@ -10,11 +10,11 @@ public class Remove implements Mutation{
 		this.program = pro;
 	} 
 	
-	public void getMutated(){
+	public boolean getMutated(){
 		int prosize = this.program.size();
 		Random rand = new Random();
 		int count = 0;
-		while(count<1000){
+		while(count<100){
 			count++;
 			int randindex = rand.nextInt(prosize);
 			Node node = program.nodeAt(randindex);
@@ -22,20 +22,20 @@ public class Remove implements Mutation{
 				Node child = node.getChildren();
 				if(child.hasChildern()){
 					Node child2 = child.getChildren();
-					
-					if(child instanceof BinaryExpr){
-						((BinaryRel)node).replace(child, child2);
+					if(child instanceof BinaryCondition || child instanceof BinaryExpr){
+						(node).replace(child, child2);
+						return true;
 					}
-					
 				}
-				
-				/*
 				if(child instanceof Rule){
 					((ProgramImpl)node).remove(child);
-					break;
-				}*/
+					return true;
+				}
 			}
 		}
+		
+		return false;
+		
 		
 	}
 	

@@ -34,15 +34,13 @@ public class ProgramImpl implements Program {
     @Override
     public Node nodeAt(int index) {
         // TODO Auto-generated method stub
-    	if(index == 0) return this;
-    	index --;
-    	for(Rule rule:program){
-    		int rulesize = rule.size();
-    		if(index < rulesize){
-    			return rule.nodeAt(index);
-    		}
-    		index -= rulesize;
-    	}
+        if (index == 0) return this;
+        index--;
+        for (Rule rule : program) {
+            int ruleSize = rule.size();
+            if (index < ruleSize) return rule.nodeAt(index);
+            index -= ruleSize;
+        }
         throw new IllegalArgumentException("Index out of bounds");
     }
 
@@ -104,6 +102,12 @@ public class ProgramImpl implements Program {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

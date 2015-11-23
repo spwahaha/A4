@@ -15,5 +15,5 @@ public interface Mutation {
     
     void setProgram(Program pro);
     
-    void getMutated();
+    boolean getMutated();
 }

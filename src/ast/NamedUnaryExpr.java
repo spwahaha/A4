@@ -17,10 +17,9 @@ public class NamedUnaryExpr extends NamedExpr{
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
 		
-		if(index==0){
-			return this;
-		}
-        return this.expr.nodeAt(index-1);
+        if (index == 0) return this;
+        index--;
+        return this.expr.nodeAt(index);
 	}
 	
 	public StringBuilder prettyPrint(StringBuilder sb) {

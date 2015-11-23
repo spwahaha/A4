@@ -36,16 +36,12 @@ public class BinaryCondition extends NodeImp implements Condition {
     @Override
     public Node nodeAt(int index) {
         // TODO Auto-generated method stub
-    	int lsize = this.l.size();
-    	index --;
-    	if(index == 0){
-    		return this;
-    	}
-    	if(index < lsize){
-    		return this.l.nodeAt(index);
-    	}else{
-    		return this.r.nodeAt(index - lsize);
-    	}
+        if (index == 0) return this;
+        index--;
+        int leftSize = l.size();
+        if (index < leftSize) return l.nodeAt(index);
+        index -= leftSize;
+        return r.nodeAt(index);
     	
     }
     
@@ -59,6 +55,17 @@ public class BinaryCondition extends NodeImp implements Condition {
 		r.prettyPrint(sb);
     	return sb;
         }
+    
+	public void replace(Node b, Node c){
+		if(l==b){
+			l = (Condition)c;
+			return;
+		}
+		if(r==b){
+			r = (Condition)c;
+			return;
+		}
+	}
 
 
     /**
@@ -99,6 +106,8 @@ public class BinaryCondition extends NodeImp implements Condition {
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		Random rand = new Random();
-		return rand.nextDouble()>0.5?this.l:this.r;
+		return this.l;
 	}
+	
+	
 }

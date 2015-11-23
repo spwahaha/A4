@@ -15,7 +15,8 @@ public class Transform implements Mutation {
 	}
 
 	@Override
-	public void getMutated() {
+	public boolean getMutated() {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}

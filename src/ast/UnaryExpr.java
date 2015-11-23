@@ -79,4 +79,10 @@ public class UnaryExpr extends NodeImp implements Expr{
 		return this.expr;
 	}
 
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

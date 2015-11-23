@@ -61,6 +61,7 @@ public interface Node {
     
     Node getChildren();
     
+    void replace(Node node1, Node node2);
     
     
 }

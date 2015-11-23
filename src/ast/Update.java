@@ -57,4 +57,10 @@ public class Update implements Node{
 		Random rand = new Random();
 		return rand.nextDouble()>0.5?this.index:this.expr;	}
 
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

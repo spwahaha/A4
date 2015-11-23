@@ -27,20 +27,16 @@ public class Command implements Node{
 	@Override
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
-		if(index == 0) return this;
-		index -- ;
-		
-		if(updates != null){
-			for(Update update:updates){
-				int size = update.size();
-				if(size < update.size()){
-					return update.nodeAt(index);
-				}
-				index -= size;
-			}
-		}
-		
-		if(this.action != null) return action.nodeAt(index);
+        if (index == 0) return this;
+        index--;
+        if (updates != null) {
+            for (Update update : updates) {
+                int updateSize = update.size();
+                if (index < updateSize) return update.nodeAt(index);
+                index -= updateSize;
+            }
+        }
+        if (action != null) return action.nodeAt(index);
         throw new IllegalArgumentException("Index out of bounds");
 
 	}
@@ -100,6 +96,13 @@ public class Command implements Node{
 			System.out.println("size:" + size);
 			return updates.get(rand.nextInt(size));
 		}
+	}
+
+
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

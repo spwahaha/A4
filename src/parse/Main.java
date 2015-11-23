@@ -2,6 +2,7 @@ package parse;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 
 import ast.Mutation;
 import ast.MutationFactory;
@@ -21,14 +22,22 @@ public class Main {
 		System.out.println("asd");
 		Node node1 = node.copy();
 		assert node!=node1;
+		ArrayList<Program> pros = new ArrayList<Program>();
+		for(int i = 0; i < 100; i++){
+			pros.add((Program) prog.copy());
+		}
 		System.out.println((node.prettyPrint(new StringBuilder()).toString()));
-//		for(int i = 0; i < 100; i++){
+		int count = 0;
+		for(int i = 0; i < 100; i++){
 			Mutation muta = MutationFactory.getRemove();
-			muta.setProgram(prog);
-			muta.getMutated();
+			Program pro = pros.get(i);
+			muta.setProgram(pro);
+			boolean succ = muta.getMutated();
 			System.out.println("mutated");
-			System.out.println((prog.prettyPrint(new StringBuilder()).toString()));	
-//		}
+			System.out.println((pro.prettyPrint(new StringBuilder()).toString()));	
+			if(succ) count++;
+		}
+		System.out.println(count);
 
 		
 	}

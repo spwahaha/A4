@@ -20,7 +20,7 @@ public class Action implements Node {
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
 		if(index == 0) return this;
-		return null;
+        throw new IllegalArgumentException("Index out of bounds");
 	}
 
 	@Override
@@ -74,6 +74,12 @@ public class Action implements Node {
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

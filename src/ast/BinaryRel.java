@@ -24,14 +24,12 @@ public class BinaryRel implements Condition{
 	@Override
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
-		if(index == 0) return this;
-		index --;
-		int lsize = this.l.size();
-		if(index < lsize)
-			return this.l.nodeAt(index);
-		else{
-			return this.r.nodeAt(index - lsize);
-		}
+        if (index == 0) return this;
+        index--;
+        int leftSize = l.size();
+        if (index < leftSize) return l.nodeAt(index);
+        index -= leftSize;
+        return r.nodeAt(index);
 	}
 
 	@Override
@@ -95,6 +93,6 @@ public class BinaryRel implements Condition{
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		Random rand = new Random();
-		return rand.nextDouble()>0.5?this.l:this.r;	}
+		return this.r;	}
 
 }

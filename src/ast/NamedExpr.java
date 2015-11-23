@@ -17,9 +17,7 @@ public class NamedExpr extends NodeImp implements Expr {
 	@Override
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
-		if(index==0){
-			return this;
-		}
+        if (index == 0) return this;
         throw new IllegalArgumentException("Index out of bounds");
 	}
 
@@ -60,6 +58,11 @@ public class NamedExpr extends NodeImp implements Expr {
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public void replace(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

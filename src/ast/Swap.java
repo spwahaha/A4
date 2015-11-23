@@ -20,7 +20,7 @@ public class Swap implements Mutation{
 
 
 	@Override
-	public void getMutated() {
+	public boolean getMutated() {
 		// TODO Auto-generated method stub
 		int prosize = this.program.size();
 		Random rand = new Random();
@@ -33,6 +33,7 @@ public class Swap implements Mutation{
 				
 			}
 		}
+		return false;
 	}
 	
 
