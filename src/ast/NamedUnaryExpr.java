@@ -29,7 +29,12 @@ public class NamedUnaryExpr extends NamedExpr{
 		this.expr.prettyPrint(sb);
 		sb.append("]");
 		return sb;
-		
+	}
+	
+	@Override
+	public Node copy() {
+		// TODO Auto-generated method stub
+		return new NamedUnaryExpr(this.kind, this.expr);
 	}
 
 }

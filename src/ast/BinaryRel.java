@@ -3,7 +3,7 @@ package ast;
 import java.util.Map;
 import java.util.Random;
 
-public class BinaryRel implements Condition{
+public class BinaryRel implements Condition, Swapable{
 
 	protected Expr l;
 	protected Operator op;
@@ -43,15 +43,16 @@ public class BinaryRel implements Condition{
 		return null;
 	}
 	
-	public void replace(Node b, Node c){
+	public boolean replace(Node b, Node c){
 		if(l==b){
 			l = (Expr)c;
-			return;
+			return true;
 		}
 		if(r==b){
 			r = (Expr)c;
-			return;
+			return true;
 		}
+		return false;
 	}
 	
 	
@@ -93,6 +94,16 @@ public class BinaryRel implements Condition{
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		Random rand = new Random();
-		return this.r;	}
+		return rand.nextDouble()>0.5? this.l:this.r;
+		}
+
+	@Override
+	public boolean swep() {
+		// TODO Auto-generated method stub
+		Expr left = this.l;
+		this.l = this.r;
+		this.r = left;
+		return true;
+	}
 
 }

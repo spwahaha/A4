@@ -8,7 +8,7 @@ import java.util.Random;
  * A representation of a binary Boolean condition: 'and' or 'or'
  *
  */
-public class BinaryCondition extends NodeImp implements Condition {
+public class BinaryCondition extends NodeImp implements Condition, Swapable {
 
     /**
      * Create an AST representation of l op r.
@@ -56,15 +56,16 @@ public class BinaryCondition extends NodeImp implements Condition {
     	return sb;
         }
     
-	public void replace(Node b, Node c){
+	public boolean replace(Node b, Node c){
 		if(l==b){
 			l = (Condition)c;
-			return;
+			return true;
 		}
 		if(r==b){
 			r = (Condition)c;
-			return;
+			return true;
 		}
+		return false;
 	}
 
 
@@ -106,8 +107,16 @@ public class BinaryCondition extends NodeImp implements Condition {
 	public Node getChildren() {
 		// TODO Auto-generated method stub
 		Random rand = new Random();
-		return this.l;
+		return rand.nextDouble()>0.5? this.l:this.r;
 	}
+
+	@Override
+	public boolean swep() {
+		// TODO Auto-generated method stub
+		Condition left = this.l;
+		this.l = this.r;
+		this.r = left;
+		return true;	}
 	
 	
 }

@@ -13,6 +13,8 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException{
 		Parser parser = new ParserImpl();
 		Program prog = parser.parse(new FileReader("examples/test1.txt"));
+		Program prog2 = prog.copy();
+		assert prog!=prog2;
 //		System.out.println("success");
 		StringBuilder sb = new StringBuilder();
 		prog.prettyPrint(sb);
@@ -24,9 +26,9 @@ public class Main {
 		assert node!=node1;
 		ArrayList<Program> pros = new ArrayList<Program>();
 		for(int i = 0; i < 100; i++){
-			pros.add((Program) prog.copy());
+			pros.add(prog.copy());
 		}
-		System.out.println((node.prettyPrint(new StringBuilder()).toString()));
+		System.out.println((prog.prettyPrint(new StringBuilder()).toString()));
 		int count = 0;
 		for(int i = 0; i < 100; i++){
 			Mutation muta = MutationFactory.getRemove();
@@ -39,6 +41,7 @@ public class Main {
 		}
 		System.out.println(count);
 
-		
+		System.out.println((prog.prettyPrint(new StringBuilder()).toString()));
+
 	}
 }

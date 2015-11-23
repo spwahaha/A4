@@ -62,8 +62,15 @@ public class Rule implements Node {
 		Random rand = new Random();
 		return rand.nextDouble()>0.5?this.condition:this.command;	}
 	@Override
-	public void replace(Node node1, Node node2) {
+	public boolean replace(Node node1, Node node2) {
 		// TODO Auto-generated method stub
-		this.condition = (Condition)node2;
+		if(this.condition == node1){
+			this.condition = (Condition) node2;
+			return true;
+		}
+		if(this.command == node1){
+			return command.replace(node1, node2);
+		}
+		return false;
 	}
 }

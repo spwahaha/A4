@@ -22,14 +22,14 @@ public class Remove implements Mutation{
 				Node child = node.getChildren();
 				if(child.hasChildern()){
 					Node child2 = child.getChildren();
-					if(child instanceof BinaryCondition || child instanceof BinaryExpr){
-						(node).replace(child, child2);
-						return true;
+					if(child instanceof BinaryCondition || child instanceof BinaryExpr || child instanceof Command){
+						boolean succ = node.replace(child, child2);
+						if(succ) return true;
 					}
 				}
-				if(child instanceof Rule){
-					((ProgramImpl)node).remove(child);
-					return true;
+				if(child instanceof Rule ){
+					boolean succ = ((ProgramImpl)node).remove(child);
+					if(succ) return true;
 				}
 			}
 		}

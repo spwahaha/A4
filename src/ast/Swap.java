@@ -27,11 +27,14 @@ public class Swap implements Mutation{
 		int count = 0;
 		while(count<1000){
 			count++;
-			Node node1 = program.nodeAt(rand.nextInt(prosize));
-			Node node2 = program.nodeAt(rand.nextInt(prosize));
-			if(node1 instanceof Rule && node2 instanceof Rule){
-				
+			Node node = program.nodeAt(rand.nextInt(prosize));
+			if(node instanceof BinaryCondition || node instanceof BinaryExpr
+					|| node instanceof BinaryRel || node instanceof ProgramImpl){
+				((Swapable) node).swep();
+				return true;
 			}
+			
+						
 		}
 		return false;
 	}

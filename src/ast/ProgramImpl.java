@@ -7,16 +7,16 @@ import java.util.Random;
  * A data structure representing a critter program.
  *
  */
-public class ProgramImpl implements Program {
-	protected ArrayList<Rule> program = new ArrayList<Rule>();
+public class ProgramImpl implements Program,Swapable {
+	protected ArrayList<Rule> rules = new ArrayList<Rule>();
 	
 	
 	public ProgramImpl(ArrayList<Rule> rules){
-		this.program = rules;
+		this.rules = rules;
 	}
 	
 	public void addRule(Rule rule){
-		this.program.add(rule);
+		this.rules.add(rule);
 	}
 	
 	
@@ -25,7 +25,7 @@ public class ProgramImpl implements Program {
     public int size() {
         // TODO Auto-generated method stub
     	int size = 1;
-    	for(Rule rule:program){
+    	for(Rule rule:rules){
     		size += rule.size();
     	}
         return size;
@@ -36,7 +36,7 @@ public class ProgramImpl implements Program {
         // TODO Auto-generated method stub
         if (index == 0) return this;
         index--;
-        for (Rule rule : program) {
+        for (Rule rule : rules) {
             int ruleSize = rule.size();
             if (index < ruleSize) return rule.nodeAt(index);
             index -= ruleSize;
@@ -63,7 +63,7 @@ public class ProgramImpl implements Program {
     @Override
     public StringBuilder prettyPrint(StringBuilder sb) {
         // TODO Auto-generated method stub
-    	for(Rule rule : this.program){
+    	for(Rule rule : this.rules){
     		rule.prettyPrint(sb);
     		sb.append(";");
     		sb.append('\n');
@@ -73,9 +73,13 @@ public class ProgramImpl implements Program {
 
 
 	@Override
-	public Node copy() {
+	public Program copy() {
 		// TODO Auto-generated method stub
-		return new ProgramImpl(new ArrayList<Rule>(this.program));
+		ArrayList<Rule> newRules=new ArrayList<Rule>();
+		for (int i=0; i<this.rules.size(); i++){
+			newRules.add((Rule)this.rules.get(i).copy());
+		}
+		return new ProgramImpl(newRules); 
 	}
 
 	@Override
@@ -87,27 +91,42 @@ public class ProgramImpl implements Program {
 	@Override
 	public Node getChildren() {
 		// TODO Auto-generated method stub
-		int size = this.program.size();
+		int size = this.rules.size();
 		Random rand = new Random();
-		return program.get(rand.nextInt(size));
+		return rules.get(rand.nextInt(size));
 		}
 	
-	public void remove(Node n){
-		if(program.size()==1){
-			return;
+	public boolean remove(Node n){
+		if(rules.size()==1){
+			return false;
 		}
-		for(Rule r:program){
+		for(Rule r:rules){
 			if(r==(Rule) n){
-				program.remove(r);
-				break;
+				rules.remove(r);
+				return true;
 			}
 		}
+		return false;
 	}
 
 	@Override
-	public void replace(Node node1, Node node2) {
+	public boolean replace(Node node1, Node node2) {
+		return false;
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean swep() {
+		// TODO Auto-generated method stub
+		Random rand = new Random();
+		int n1 = rand.nextInt(rules.size());
+		int n2 = rand.nextInt(rules.size());
+		Rule r1 = rules.get(n1);
+		Rule r2 = rules.get(n2);
+		rules.add(n1, r2);
+		rules.add(n2, r1);
+		return true;
 	}
 
 }

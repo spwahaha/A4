@@ -4,7 +4,7 @@ package ast;
 import java.util.Map;
 import java.util.Random;
 
-public class BinaryExpr extends NodeImp implements Expr {
+public class BinaryExpr extends NodeImp implements Expr, Swapable {
 	
 	protected Expr l;
 	protected Expr r;
@@ -85,9 +85,18 @@ public class BinaryExpr extends NodeImp implements Expr {
 		return rand.nextDouble()>0.5?this.l:this.r;	}
 
 	@Override
-	public void replace(Node node1, Node node2) {
+	public boolean replace(Node node1, Node node2) {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean swep() {
+		// TODO Auto-generated method stub
+		Expr left = this.l;
+		this.l = this.r;
+		this.r = left;
+		return true;	}
 
 }

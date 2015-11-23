@@ -100,9 +100,15 @@ public class Command implements Node{
 
 
 	@Override
-	public void replace(Node node1, Node node2) {
+	public boolean replace(Node node1, Node node2) {
 		// TODO Auto-generated method stub
+		if(node1 == this.updates){
+			this.updates = (ArrayList)node2;
+			return true;
+		}
 		
+		return false;
+
 	}
 
 

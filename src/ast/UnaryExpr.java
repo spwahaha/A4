@@ -80,7 +80,8 @@ public class UnaryExpr extends NodeImp implements Expr{
 	}
 
 	@Override
-	public void replace(Node node1, Node node2) {
+	public boolean replace(Node node1, Node node2) {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
