@@ -63,5 +63,6 @@ public interface Node {
     
     boolean replace(Node node1, Node node2);
     
+    boolean contains(Node node);
     
 }

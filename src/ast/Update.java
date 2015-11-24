@@ -61,7 +61,12 @@ public class Update implements Node{
 	public boolean replace(Node node1, Node node2) {
 		return false;
 		// TODO Auto-generated method stub
-		
+	}
+
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.expr == node || this.index == node;
 	}
 
 }

@@ -44,23 +44,49 @@ public class ProgramImpl implements Program,Swapable {
         throw new IllegalArgumentException("Index out of bounds");
     }
 
+    
+    
     @Override
     public Program mutate() {
         // TODO Auto-generated method stub
-		Mutation muta = MutationFactory.getRemove();
-		muta.setProgram(this);
-		muta.getMutated();
-		return this;
+    	Random rand = new Random();
+    	int choice = rand.nextInt(6);
+    	Mutation mutate = null;
+    	switch(choice){
+    	case 0: mutate = MutationFactory.getDuplicate(); break;
+    	case 1: mutate = MutationFactory.getInsert(); break;
+    	case 2: mutate = MutationFactory.getRemove(); break;
+    	case 3: mutate = MutationFactory.getSwap(); break;
+    	case 4: mutate = MutationFactory.getTransform(); break;
+    	case 5: mutate = MutationFactory.getReplace(); break;
+    	}
+    	mutate.setProgram(this);
+    	mutate.getMutated();
+    	return this;
         
     }
 
     @Override
     public Program mutate(int index, Mutation m) {
         // TODO Auto-generated method stub
-        return null;
+    	m.setProgram(this);
+        Node child = nodeAt(index);
+        Node parent = findParent(child);
+        m.getMutated(parent, child);
+        return this;
     }
 
-    @Override
+    private Node findParent(Node child) {
+		// TODO Auto-generated method stub
+		for(int i = 0; i < this.size(); i++){
+			if(nodeAt(i).contains(child)){
+				return nodeAt(i);
+			}
+		}
+		return null;
+	}
+
+	@Override
     public StringBuilder prettyPrint(StringBuilder sb) {
         // TODO Auto-generated method stub
     	for(Rule rule : this.rules){
@@ -111,8 +137,14 @@ public class ProgramImpl implements Program,Swapable {
 
 	@Override
 	public boolean replace(Node node1, Node node2) {
+		for(int i = 0; i < this.size(); i++){
+			if(rules.get(i) == node1){
+				rules.set(i, ((Rule)(node2).copy()));
+				return true;
+			}
+		}
+		
 		return false;
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -124,9 +156,15 @@ public class ProgramImpl implements Program,Swapable {
 		int n2 = rand.nextInt(rules.size());
 		Rule r1 = rules.get(n1);
 		Rule r2 = rules.get(n2);
-		rules.add(n1, r2);
-		rules.add(n2, r1);
+		rules.set(n1, r2);
+		rules.set(n2, r1);
 		return true;
+	}
+
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return rules.contains(node);
 	}
 
 }

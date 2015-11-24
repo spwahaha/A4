@@ -119,6 +119,12 @@ public class BinaryCondition extends NodeImp implements Condition, Swapable {
 		this.l = this.r;
 		this.r = left;
 		return true;	}
+
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.l==node||this.r==node;
+	}
 	
 	
 }

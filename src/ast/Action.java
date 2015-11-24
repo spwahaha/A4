@@ -83,4 +83,10 @@ public class Action implements Node {
 		
 	}
 
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

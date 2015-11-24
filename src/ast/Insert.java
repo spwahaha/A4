@@ -157,4 +157,10 @@ public class Insert implements Mutation {
 		// chose without smell
 	}
 
+	@Override
+	public boolean getMutated(Node parent, Node child) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

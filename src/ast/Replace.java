@@ -33,52 +33,74 @@ public class Replace implements Mutation{
 			Node node = program.nodeAt(rand.nextInt(prosize));
 			if(node.hasChildern()){
 				Node child = node.getChildren();
-				Node similarChild = null;
-				int con2 = 0;
-				boolean similar = false;
-				while(con2<100){
-					con2++;
-					similarChild = program.nodeAt(rand.nextInt(prosize));
-					StringBuilder sb1 = new StringBuilder();					
-					StringBuilder sb2 = new StringBuilder();
-					if(child == similarChild) continue;
-					child.prettyPrint(sb1);
-					similarChild.prettyPrint(sb2);
-					
-					if(sb1.toString().equals(sb2.toString()))
-						continue;
-					
-					if(child instanceof Condition && 
-							similarChild instanceof Condition){
-						similar = true;
-						break;
-					}
-					
-					if(child instanceof Expr && 
-							similarChild instanceof Expr){
-						similar = true;
-						break;
-					}
-					if(child instanceof Update && 
-							similarChild instanceof Update){
-						similar = true;
-						break;
-					}
-					if(child instanceof Action && 
-							similarChild instanceof Action){
-						similar = true;
-						break;
-					}	
-				}
-				
-				if(similar){
-					node.replace(child, similarChild.copy());
-					return true;
-				}
+				boolean succ = getMutated(node,child);
+				if(succ) return true;
 			}
 			
 		}
 		return false;
 	}
+
+	@Override
+	public boolean getMutated(Node parent, Node child) {
+		// TODO Auto-generated method stub
+		int prosize = this.program.size();
+		Random rand = new Random();
+		Node similarChild = null;
+		int con2 = 0;
+		boolean similar = false;
+		while(con2<1000){
+			con2++;
+			similarChild = program.nodeAt(rand.nextInt(prosize));
+//			similarChild = program.nodeAt(2);
+
+			StringBuilder sb1 = new StringBuilder();					
+			StringBuilder sb2 = new StringBuilder();
+			if(child == similarChild) continue;
+			child.prettyPrint(sb1);
+			similarChild.prettyPrint(sb2);
+			
+			if(sb1.toString().equals(sb2.toString()))
+				continue;
+			
+			if(child instanceof Condition && 
+					similarChild instanceof Condition){
+				similar = true;
+				break;
+			}
+			
+			if(child instanceof Expr && 
+					similarChild instanceof Expr){
+				similar = true;
+				break;
+			}
+			if(child instanceof Update && 
+					similarChild instanceof Update){
+				similar = true;
+				break;
+			}
+			if(child instanceof Action && 
+					similarChild instanceof Action){
+				similar = true;
+				break;
+			}
+			
+			if(child instanceof Rule && 
+					similarChild instanceof Rule){
+				similar = true;
+				break;
+			}
+
+		}
+		
+		if(similar){
+			parent.replace(child, similarChild.copy());
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 	
 }

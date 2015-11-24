@@ -112,4 +112,11 @@ public class Command implements Node{
 	}
 
 
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.action == node || this.updates.contains(node);
+	}
+
+
 }

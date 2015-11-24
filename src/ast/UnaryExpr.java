@@ -86,4 +86,10 @@ public class UnaryExpr extends NodeImp implements Expr{
 		
 	}
 
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.expr == node;
+	}
+
 }

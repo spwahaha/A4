@@ -73,4 +73,9 @@ public class Rule implements Node {
 		}
 		return false;
 	}
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.condition==node || this.command==node;
+	}
 }

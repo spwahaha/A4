@@ -16,4 +16,6 @@ public interface Mutation {
     void setProgram(Program pro);
     
     boolean getMutated();
+    
+    boolean getMutated(Node parent, Node child);
 }

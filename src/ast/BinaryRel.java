@@ -106,4 +106,10 @@ public class BinaryRel implements Condition, Swapable{
 		return true;
 	}
 
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return this.l == node || this.r == node;
+	}
+
 }

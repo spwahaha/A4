@@ -65,5 +65,10 @@ public class NamedExpr extends NodeImp implements Expr {
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public boolean contains(Node node) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

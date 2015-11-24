@@ -28,13 +28,19 @@ public class Swap implements Mutation{
 		while(count<1000){
 			count++;
 			Node node = program.nodeAt(rand.nextInt(prosize));
-			if(node instanceof BinaryCondition || node instanceof BinaryExpr
-					|| node instanceof BinaryRel || node instanceof ProgramImpl){
-				((Swapable) node).swep();
-				return true;
-			}
-			
-						
+			boolean succ = getMutated(null, node);
+			if(succ) return true;		
+		}
+		return false;
+	}
+
+	@Override
+	public boolean getMutated(Node parent, Node node) {
+		// TODO Auto-generated method stub
+		if(node instanceof BinaryCondition || node instanceof BinaryExpr
+				|| node instanceof BinaryRel || node instanceof ProgramImpl){
+			((Swapable) node).swep();
+			return true;
 		}
 		return false;
 	}
