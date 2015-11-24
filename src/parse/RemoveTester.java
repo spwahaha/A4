@@ -138,8 +138,15 @@ public class RemoveTester {
 			StringBuilder sb2 = new StringBuilder();
 			pro.prettyPrint(sb2);
 //			System.out.println(());	
-			if(!sb1.toString().equals(sb2.toString()))
+			if(succ){
 				count++;
+			}else{
+//				System.out.println(succ);
+//				System.out.println("sb1"+sb1.toString());
+//				System.out.println("sb2"+sb2.toString());
+			}
+
+				
 //			if(succ) count++;
 		}
 		System.out.println("replaced");

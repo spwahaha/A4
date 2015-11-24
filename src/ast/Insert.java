@@ -26,7 +26,7 @@ public class Insert implements Mutation {
 		int prosize = this.program.size();
 		Random rand = new Random();
 		int count = 0;
-		while(count<10000){
+		while(count<100){
 			count++;
 			Node node = program.nodeAt(rand.nextInt(prosize));
 			if(node.hasChildern()){
