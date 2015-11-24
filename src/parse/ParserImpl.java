@@ -181,7 +181,6 @@ class ParserImpl implements Parser {
     		consume(t,TokenType.RPAREN);
     	}
     	else if(token.getType() == TokenType.MINUS){
-    		UnaryExpr.Operator op = unExprOpMap.get(t.next().getType());
     		expr = parseUnaryExpr(t);
     		
     	}

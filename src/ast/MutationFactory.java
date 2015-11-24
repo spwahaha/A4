@@ -32,6 +32,6 @@ public class MutationFactory {
 
     public static Mutation getDuplicate() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new Duplicate();
     }
 }

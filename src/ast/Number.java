@@ -15,9 +15,12 @@ public class Number implements Expr {
 	@Override
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub
-		if(index == 0)
+		if(index != 0){
+//			System.out.println("number index!=0, index:" + index);
+		}
+//		if(index == 0)
 			return this;
-        throw new IllegalArgumentException("Index out of bounds");
+//        throw new IllegalArgumentException("Index out of bounds");
 	}
 
 	@Override

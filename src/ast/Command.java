@@ -86,14 +86,14 @@ public class Command implements Node{
 		}
 		if(this.action==null){
 			int size = this.updates.size();
-			System.out.println("size:" + size);
+//			System.out.println("size:" + size);
 			return updates.get(rand.nextInt(size));
 		}
 		if(rand.nextDouble()>0.5){
 			return this.action;
 		}else{
 			int size = this.updates.size();
-			System.out.println("size:" + size);
+//			System.out.println("size:" + size);
 			return updates.get(rand.nextInt(size));
 		}
 	}

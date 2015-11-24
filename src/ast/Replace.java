@@ -19,18 +19,19 @@ public class Replace implements Mutation{
 
 	@Override
 	public boolean getMutated() {
+		// success rate is too low
 		// TODO Auto-generated method stub
 		int prosize = this.program.size();
 		Random rand = new Random();
 		int count = 0;
-		while(count<10){
+		while(count<1000){
 			count++;
 			Node node = program.nodeAt(rand.nextInt(prosize));
 			Node child = node.getChildren();
 			Node similarChild = null;
 			int con2 = 0;
 			boolean similar = false;
-			while(con2<10){
+			while(con2<1000){
 				con2++;
 				similarChild = program.nodeAt(rand.nextInt(prosize));
 				if(child == similarChild) continue;

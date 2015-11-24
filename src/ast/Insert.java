@@ -26,7 +26,7 @@ public class Insert implements Mutation {
 		int prosize = this.program.size();
 		Random rand = new Random();
 		int count = 0;
-		while(count<1000){
+		while(count<10000){
 			count++;
 			Node node = program.nodeAt(rand.nextInt(prosize));
 			if(node.hasChildern()){
@@ -35,6 +35,8 @@ public class Insert implements Mutation {
 					Node insertNode = child.copy();
 					((BinaryCondition)insertNode).l = (Condition) child.copy();
 					Condition insertChild = findConditionNode();
+					if(insertChild==null)
+						continue;
 					((BinaryCondition)insertNode).r = insertChild;
 					BinaryCondition.Operator op = findConditionOper();
 					((BinaryCondition)insertNode).op = op;
@@ -46,6 +48,8 @@ public class Insert implements Mutation {
 					Node insertNode = child.copy();
 					((BinaryExpr)insertNode).l = (Expr) child.copy();
 					Expr insertNodeChild = findExprNode();
+					if(insertNodeChild==null)
+						continue;
 					((BinaryExpr)insertNode).r = (Expr)insertNodeChild;
 					BinaryExpr.Operator op = findExprOper();
 					
@@ -57,7 +61,9 @@ public class Insert implements Mutation {
 				if(child instanceof BinaryRel){
 					//use child to build a binaryCondition
 					
-					BinaryCondition insertNode = (BinaryCondition) (findBinaryConditionNode().copy());// binaryCondition
+					BinaryCondition insertNode = findBinaryConditionNode();// binaryCondition
+					if(insertNode == null)
+						continue;
 					insertNode.l = (Condition)child.copy();
 					Condition insertNodeChild = findConditionNode();
 					insertNode.r = insertNodeChild;
