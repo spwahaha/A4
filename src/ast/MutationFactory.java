@@ -27,7 +27,7 @@ public class MutationFactory {
 
     public static Mutation getInsert() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return new Insert();
     }
 
     public static Mutation getDuplicate() {
