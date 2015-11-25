@@ -149,7 +149,7 @@ public class ProgramImpl implements Program,Swapable {
 	}
 
 	@Override
-	public boolean swep() {
+	public boolean swap() {
 		// TODO Auto-generated method stub
 		Random rand = new Random();
 		int n1 = rand.nextInt(rules.size());

@@ -94,7 +94,8 @@ public class BinaryExpr extends NodeImp implements Expr, Swapable {
 	}
 
 	@Override
-	public boolean swep() {
+	/** swap the two children*/
+	public boolean swap() {
 		// TODO Auto-generated method stub
 		Expr left = this.l;
 		this.l = this.r;
@@ -102,6 +103,7 @@ public class BinaryExpr extends NodeImp implements Expr, Swapable {
 		return true;	}
 
 	@Override
+	/**return this contains node or not*/
 	public boolean contains(Node node) {
 		// TODO Auto-generated method stub
 		return this.l == node || this.r == node;

@@ -113,7 +113,8 @@ public class BinaryCondition extends NodeImp implements Condition, Swapable {
 	}
 
 	@Override
-	public boolean swep() {
+	/** swap the two children*/
+	public boolean swap() {
 		// TODO Auto-generated method stub
 		Condition left = this.l;
 		this.l = this.r;
@@ -121,6 +122,7 @@ public class BinaryCondition extends NodeImp implements Condition, Swapable {
 		return true;	}
 
 	@Override
+	/**return this contains node or not*/ 
 	public boolean contains(Node node) {
 		// TODO Auto-generated method stub
 		return this.l==node||this.r==node;

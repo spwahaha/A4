@@ -56,13 +56,15 @@ public interface Node {
     
     Node copy();
     
-    
+    /** @return whether this node has any child*/
     boolean hasChildern();
-    
+    /** get one child of this node if child is available
+     * @return one child of this node or null if this node has no children*/
     Node getChildren();
-    
+    /** replace the node1 by node2
+     * @return whether replacemenet is successful*/
     boolean replace(Node node1, Node node2);
-    
+    /** return whether contains node*/
     boolean contains(Node node);
     
 }

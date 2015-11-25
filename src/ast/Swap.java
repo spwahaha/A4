@@ -39,7 +39,7 @@ public class Swap implements Mutation{
 		// TODO Auto-generated method stub
 		if(node instanceof BinaryCondition || node instanceof BinaryExpr
 				|| node instanceof BinaryRel || node instanceof ProgramImpl){
-			((Swapable) node).swep();
+			((Swapable) node).swap();
 			return true;
 		}
 		return false;

@@ -1,5 +1,7 @@
 package ast;
 
 public interface Swapable {
-	boolean swep();
+	/**swap the two children of this node
+	 * @return whether swap is successful*/
+	boolean swap();
 }

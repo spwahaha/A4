@@ -98,7 +98,7 @@ public class BinaryRel implements Condition, Swapable{
 		}
 
 	@Override
-	public boolean swep() {
+	public boolean swap() {
 		// TODO Auto-generated method stub
 		Expr left = this.l;
 		this.l = this.r;
