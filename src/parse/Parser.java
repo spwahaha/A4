@@ -3,6 +3,7 @@ package parse;
 import java.io.Reader;
 
 import ast.Program;
+import exceptions.SyntaxError;
 
 /**
  * An interface for parsing a critter program.
@@ -16,4 +17,6 @@ public interface Parser {
      * @return The parsed program, or null if the program contains a syntax error.
      */
     Program parse(Reader r);
+
+	Program parse(Tokenizer t);
 }

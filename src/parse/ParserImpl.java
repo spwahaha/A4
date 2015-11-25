@@ -66,6 +66,16 @@ public class ParserImpl implements Parser {
 	 //       throw new UnsupportedOperationException();
 
     }
+    
+    public Program parse(Tokenizer t){
+    	try {
+			return parseProgram(t);
+		} catch (SyntaxError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+    }
 
     /** Parses a program from the stream of tokens provided by the Tokenizer,
      *  consuming tokens representing the program. All following methods with

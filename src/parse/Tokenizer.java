@@ -33,7 +33,7 @@ import parse.Token.NumToken;
  * A Tokenizer turns a Reader into a stream of tokens that can be iterated over
  * using a {@code for} loop.
  */
-class Tokenizer implements Iterator<Token> {
+public class Tokenizer implements Iterator<Token> {
 
     private final BufferedReader br;
     private final StringBuilder buf;
@@ -54,7 +54,7 @@ class Tokenizer implements Iterator<Token> {
      * @param r
      *            The source from which the Tokenizer lexes input into Tokens
      */
-    Tokenizer(Reader r) {
+    public Tokenizer(Reader r) {
         br = new BufferedReader(r);
         buf = new StringBuilder();
         lineNo = 1;
@@ -100,7 +100,7 @@ class Tokenizer implements Iterator<Token> {
      * @throws EOFException
      *             if EOF was encountered while trying to lex the next token
      */
-    Token peek() throws TokenizerIOException {
+    public Token peek() throws TokenizerIOException {
         if (!tokenReady && !atEOF) try {
             lexOneToken();
         }

@@ -14,7 +14,7 @@ import java.util.InputMismatchException;
 /**
  * A Token represents a legal token (symbol) in the critter language
  */
-class Token {
+public class Token {
     private final TokenType type;
     final int lineNo;
 

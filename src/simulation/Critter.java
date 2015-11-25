@@ -18,20 +18,30 @@ public class Critter implements Placeable {
 	protected Program rules;
 	protected int Direction;
 	protected World world;
-	
+	protected String name;
 	
 	public Critter(){
 		this.mem = new int[8];
-		
+		this.name = "";
 	}
+	
+	
 	
 	public Critter(HexCoord position, World world){
 		this.position = position;
 		this.world = world;
 	}
 	
+	public void setName(String name){
+		this.name = name;
+	}
+	
 	public void setMem(int index, int n){
 		this.mem[index] = n;
+	}
+	
+	public void setProgram(Program pro){
+		this.rules = pro;
 	}
 	
 	public int getMem(int index){
@@ -68,9 +78,39 @@ public class Critter implements Placeable {
 		int dirsum = this.Direction + dir;
 		nearPosi.setCol(possiblePosi[dirsum % 6][0]); 		
 		nearPosi.setCol(possiblePosi[dirsum % 6][1]);
-		// if nearPosi out of scope, it should be rock,
+		return getPosiInfo(nearPosi);
 		
-		Placeable place = world.getObj(nearPosi);
+	}
+	
+	public int ahead(int dist){
+		int c = this.position.col;
+		int r = this.position.row;
+		int[][] possiblePosi = {{c,r+1},
+								{c+1,r+1},
+								{c+1,r},
+								{c,r-1},
+								{c-1,r-1},
+								{c-1,r}};
+		for(int i = 0; i < possiblePosi.length; i++){
+			possiblePosi[i][0] = possiblePosi[i][0] - c;
+			possiblePosi[i][1] = possiblePosi[i][1] - r;			
+		}
+		int disc = possiblePosi[this.Direction][0];
+		int disr = possiblePosi[this.Direction][1];
+		
+		for(int i = 0; i < dist; i++){
+			c = c + disc;
+			r = r + disr;
+		}
+		
+		HexCoord aheadPosi = new HexCoord(c,r);
+		return getPosiInfo(aheadPosi);
+
+	}
+	
+	private int getPosiInfo(HexCoord posi){
+		if(!this.world.validPosi(posi)) return -1; // if it's out of world, it's a rock!!
+		Placeable place = world.getObj(posi);
 		if(place == null) return 0;
 		if(place instanceof Critter){
 			((Critter)place).getAppearance();
@@ -81,11 +121,6 @@ public class Critter implements Placeable {
 		if(place instanceof Food){
 			return (-((Food)place).getFoodValue()) -1;
 		}
-		return 0;
-		
-	}
-	
-	public int ahead(int dist){
 		return 0;
 	}
 	
