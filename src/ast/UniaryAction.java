@@ -24,6 +24,10 @@ public class UniaryAction extends Action implements Node{
 		return this.index.nodeAt(index - 1);
 	}
 
+	public Expr getExpr(){
+		return (Expr)this.index.copy();
+	}
+	
 	@Override
 	public StringBuilder prettyPrint(StringBuilder sb) {
 		// TODO Auto-generated method stub

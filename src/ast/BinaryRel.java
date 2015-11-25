@@ -55,6 +55,18 @@ public class BinaryRel implements Condition, Swapable{
 		return false;
 	}
 	
+	public Expr getLeft(){
+		return (Expr)this.l.copy();
+	}
+	
+	public Expr getRight(){
+		return (Expr)this.r.copy();
+	}
+	
+	public Operator getOp(){
+		return this.op;
+	}
+	
 	
 	public enum Operator{
 	    LT( "<"),

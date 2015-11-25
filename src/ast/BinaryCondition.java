@@ -99,6 +99,18 @@ public class BinaryCondition extends NodeImp implements Condition, Swapable {
 		return new BinaryCondition((Condition)this.l.copy(), this.op, (Condition)this.r.copy());
 	}
 
+	public Condition getLeft(){
+		return (Condition)this.l.copy();
+	}
+	
+	public Condition getRight(){
+		return (Condition) this.r.copy();
+	}
+	
+	public Operator getOp(){
+		return this.op;
+	}
+	
 	@Override
 	public boolean hasChildern() {
 		// TODO Auto-generated method stub

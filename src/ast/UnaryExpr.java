@@ -41,6 +41,15 @@ public class UnaryExpr extends NodeImp implements Expr{
 		return sb;
 	}
 	
+	public Expr getExpr(){
+		return (Expr)this.expr.copy();
+	}
+	
+	public Operator getOp(){
+		return this.op;
+	}
+	
+	
 	public enum Operator{
 		NEG("-");
 		String rep;

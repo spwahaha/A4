@@ -22,7 +22,11 @@ public class Number implements Expr {
 			return this;
 //        throw new IllegalArgumentException("Index out of bounds");
 	}
-
+	
+	public int getValue(){
+		return this.index;
+	}
+	
 	@Override
 	public StringBuilder prettyPrint(StringBuilder sb) {
 		// TODO Auto-generated method stub

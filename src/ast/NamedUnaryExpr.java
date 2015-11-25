@@ -22,6 +22,11 @@ public class NamedUnaryExpr extends NamedExpr{
         return this.expr.nodeAt(index);
 	}
 	
+	
+	public Expr getExpr(){
+		return (Expr)this.expr.copy();
+	}
+	
 	public StringBuilder prettyPrint(StringBuilder sb) {
 		// TODO Auto-generated method stub
 		sb.append(this.kind);

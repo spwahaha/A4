@@ -23,7 +23,20 @@ public class Command implements Node{
 		}
 		return action==null?size:size+action.size();
 	}
-
+	
+	public ArrayList<Update> getUpdates(){
+		ArrayList<Update> updatesCopy = new ArrayList<Update>();
+		for(int i = 0; i < this.updates.size(); i++){
+			updatesCopy.add(i, ((Update)updates.get(i).copy()));
+		}
+		return updatesCopy;
+	}
+	
+	public Action getAction(){
+		if(this.action == null) return null;
+		return (Action)this.action.copy();
+	}
+	
 	@Override
 	public Node nodeAt(int index) {
 		// TODO Auto-generated method stub

@@ -33,6 +33,18 @@ public class BinaryExpr extends NodeImp implements Expr, Swapable {
         return r.nodeAt(index);
 	}
 
+	public Expr getLeft(){
+		return (Expr)this.l.copy();
+	}
+	
+	public Expr getRight(){
+		return (Expr)this.r.copy();
+	}
+	
+	public Operator getOp(){
+		return this.op;
+	}
+	
 	@Override
 	public StringBuilder prettyPrint(StringBuilder sb) {
 		// TODO Auto-generated method stub

@@ -25,7 +25,7 @@ import ast.UniaryAction;
 import ast.Update;
 import exceptions.SyntaxError;
 
-class ParserImpl implements Parser {
+public class ParserImpl implements Parser {
     protected static final Map<TokenType, Action.Kind> actionMap =
             createTokenLookupMap(Action.Kind.values());
     protected static final Map<TokenType, BinaryRel.Operator> relOpMap =

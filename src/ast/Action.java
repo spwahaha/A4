@@ -30,6 +30,10 @@ public class Action implements Node {
 		return sb;
 	}
 	
+	public Kind getKind(){
+		return this.kind;
+	}
+	
 	public enum Kind{
 	    WAIT("wait"),
 	    FORWARD("forward"),

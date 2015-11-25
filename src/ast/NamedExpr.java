@@ -27,6 +27,10 @@ public class NamedExpr extends NodeImp implements Expr {
 		return sb.append(kind);
 	}
 	
+	public Kind getKind(){
+		return this.kind;
+	}
+	
 	public enum Kind{
 	    NEARBY("nearby"),
 	    AHEAD("ahead"),

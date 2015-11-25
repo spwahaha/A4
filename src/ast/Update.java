@@ -38,6 +38,14 @@ public class Update implements Node{
 		this.expr.prettyPrint(sb);
 		return null;
 	}
+	
+	public Expr getIndex(){
+		return (Expr)this.index.copy();
+	}
+	
+	public Expr getExpr(){
+		return (Expr)this.expr.copy();
+	}
 
 	@Override
 	public Node copy() {

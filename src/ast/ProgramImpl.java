@@ -19,6 +19,9 @@ public class ProgramImpl implements Program,Swapable {
 		this.rules.add(rule);
 	}
 	
+	public ArrayList<Rule> getRules(){
+		return ((ProgramImpl)this.copy()).rules;
+	}
 	
 	
     @Override

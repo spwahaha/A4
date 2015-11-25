@@ -20,6 +20,14 @@ public class Rule implements Node {
         return this.condition.size() + this.command.size() + 1;
     }
 
+    public Condition getCondition(){
+    	return (Condition)this.condition.copy();
+    }
+    
+    public Command getCommand(){
+    	return ((Command)this.command.copy());
+    }
+    
     @Override
     public Node nodeAt(int index) {
         // TODO Auto-generated method stub
