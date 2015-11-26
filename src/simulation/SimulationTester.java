@@ -2,8 +2,12 @@ package simulation;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Test;
 
@@ -16,37 +20,20 @@ import parse.Tokenizer;
 public class SimulationTester {
 
 	@Test
-	public void test() throws FileNotFoundException {
-		Tokenizer t = new Tokenizer(new FileReader("examples/example-critter.txt"));
-		Critter cr1 = new Critter();
-		t.next(); t.next();
-		String name = t.next().toString().split(":")[1];
-		t.next(); t.next(); 
-		int memsize = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int defense = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int offense = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int size = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int energy = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int posture = Integer.parseInt(t.next().toString());
-//		t.next();t.next(); // finish reading the critter attribute
-		// then parseProgram
-		System.out.println(t.peek().toString());
-		Parser parser = new ParserImpl();
-		Program prog = parser.parse(t);
-		cr1.setName(name);
-		cr1.setMem(0, memsize);
-		cr1.setMem(1, defense);
-		cr1.setMem(2, offense);
-		cr1.setMem(3, size);
-		cr1.setMem(4, energy);
-		cr1.setMem(7, posture);
-		cr1.setProgram(prog);
-		System.out.println("critter success");
+	public void test() throws IOException {
+		String fileName = "example-critter.txt";
+		Critter cri = new Critter(fileName);
+		ArrayList<Critter> cris = new ArrayList<Critter>();
+		cris.add(cri);
+		System.out.println(cris.get(0).getMem(3));
+		Critter cri2 = cris.get(0);
+		cri2.setMem(3, cri2.getMem(3) + 1);
+		System.out.println(cris.get(0).getMem(3));		
+		HashMap<Integer, Food> hm = new HashMap<Integer, Food>();
+		hm.put(1, new Food(300));
+		Food fod1 = hm.get(1);
+		fod1.setFoodValue(100);
+		System.out.println(hm.get(1).value);
 	}
 
 }

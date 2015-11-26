@@ -6,4 +6,6 @@ package interpret;
  */
 public interface Outcome {
     // TODO define appropriate operations
+	String getAction();
+	int getValue();
 }

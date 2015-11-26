@@ -18,6 +18,7 @@ import ast.UnaryExpr;
 import ast.UniaryAction;
 import ast.Update;
 import simulation.Critter;
+import simulation.World;
 import ast.Number;
 
 public class InterpreterImpl implements Interpreter {
@@ -41,19 +42,17 @@ public class InterpreterImpl implements Interpreter {
 		// TODO Auto-generated method stub
 		Outcome outcome = null;
 		ArrayList<Rule> rules = ((ProgramImpl)program).getRules();
-		for(int i = 0; i < 2000; i++){
+		critter.setPass(0);
+		for(int i = 0; i < World.MAX_RULES_PER_TURN; i++){
 			Rule rule = rules.get(i % rules.size());
 			outcome = InterpretRule(rule);
 			if(outcome==null){
 				critter.setPass(critter.getPass() + 1);
 			}else{
-				critter.setPass(0);
+				critter.setLastRule(i);
 				return outcome;
 			}
-			if(critter.getPass() >=999){
-				critter.setPass(0);
-				break;
-			}
+
 		}	
 		System.out.println("critter pass:" + critter.getPass());
 		return new OutcomeImpl("wait", -1);

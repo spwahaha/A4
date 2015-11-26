@@ -122,7 +122,7 @@ public class Tokenizer implements Iterator<Token> {
     /**
      * Close the reader opened by this tokenizer.
      */
-    void close() {
+    public void close() {
         try {
             br.close();
         }

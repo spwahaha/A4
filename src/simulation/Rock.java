@@ -1,5 +1,5 @@
 package simulation;
 
-public class Rock {
+public class Rock implements Placeable {
 	
 }

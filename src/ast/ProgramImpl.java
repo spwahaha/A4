@@ -23,6 +23,9 @@ public class ProgramImpl implements Program,Swapable {
 		return ((ProgramImpl)this.copy()).rules;
 	}
 	
+	public int getRuleNumber(){
+		return this.rules.size();
+	}
 	
     @Override
     public int size() {

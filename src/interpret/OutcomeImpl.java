@@ -8,4 +8,12 @@ public class OutcomeImpl implements Outcome {
 		this.action = action;
 		this.value = value;
 	}
+	
+	public String getAction(){
+		return this.action;
+	}
+	
+	public int getValue(){
+		return this.value;
+	}
 }
