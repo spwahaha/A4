@@ -2,10 +2,14 @@ package simulation;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Random;
 
+import ast.Mutation;
+import ast.MutationFactory;
 import ast.Program;
 import ast.ProgramImpl;
+import ast.Rule;
 import parse.Parser;
 import parse.ParserImpl;
 import parse.Tokenizer;
@@ -26,7 +30,12 @@ public class Critter implements Placeable {
 	protected World world;
 	protected String name;
 	protected int lastRuleIndex;
-	protected static int MAX_TAG_VALUE;
+	protected static final int MAX_TAG_VALUE = 99;
+	protected static final int MAX_POSTURE_VALUE = 99;
+	protected static final int INITIAL_SIZE = 1;
+	protected static final double MUTATION_PROBABILITY = 1.0 / 4;
+	protected static final int MUTATION_CATEGORY = 2;
+	protected static final int MUTATION_ATTR_CATEGORY = 3;
 	
 	public Critter(){
 		this.mem = new int[8];
@@ -209,5 +218,134 @@ public class Critter implements Placeable {
 							(offense + defense) * World.ABILITY_COST;
 		return complexity;
 	}
+	
+	
+	public Critter bud(){
+		Critter child = new Critter();
+		child.setMem(0, this.mem[0]);
+		child.setMem(1, this.mem[1]);
+		child.setMem(2, this.mem[2]);
+		child.setMem(3, Critter.INITIAL_SIZE); // size
+		child.setMem(4, World.INITIAL_ENERGY); // energy
+		child.setMem(5, 0);
+		child.setMem(6, 0); // tag
+		child.setMem(7, 0); // posture
+		child.rules = this.rules.copy();
+		child.lastRuleIndex = 0;
+		child.setName(this.name + "'s child");
+		child.world = this.world;
+		child.position = World.getBackPosi(this);
+		child.Direction = (new Random()).nextInt(World.MAX_DIRECTION);
+		// bud with mutation
+		critterMutation(child);
+		return child;
+		
+	}
+
+
+	private static void critterMutation(Critter cri) {
+		// TODO Auto-generated method stub
+		Random rand = new Random();
+		double prob = rand.nextDouble();
+		if(prob <= Critter.MUTATION_PROBABILITY){
+			int category = rand.nextInt(Critter.MUTATION_CATEGORY);
+			switch(category){
+				case 0:{ // change attribute
+					// memory, defense, offense is 0, 1, 2
+					int attribute = rand.nextInt(Critter.MUTATION_ATTR_CATEGORY);
+					int increment = rand.nextInt(2) == 0? -1:+1;// 
+					cri.setMem(attribute, cri.getMem(attribute) + increment);
+					break;
+				}
+				case 1:{
+					cri.rules.mutate();
+					break;
+				}
+				default: return;
+			}
+			critterMutation(cri);
+		}
+		
+	}
+	
+	public boolean wantMate(){
+		Rule lastRul = this.rules.getRule(this.lastRuleIndex);
+		return lastRul.isActionMate();
+	}
+	
+	public static Critter mate(Critter cri, Critter bride, HexCoord childPosi, World world){
+
+		Critter child = new Critter();
+		child.setProgram(getChildProgram(cri,bride));
+		int attr = World.RAND.nextInt(2);
+		switch(attr){
+			case 0:{
+				child.setMem(0, cri.getMem(0));
+				child.setMem(1, cri.getMem(1));
+				child.setMem(2, cri.getMem(2));		
+				break;
+			}
+			case 1:{
+				child.setMem(0, cri.getMem(0));
+				child.setMem(1, cri.getMem(1));
+				child.setMem(2, cri.getMem(2));	
+				break;
+			}
+			default: return null;
+		}
+		
+		child.setMem(3, Critter.INITIAL_SIZE); // size
+		child.setMem(4, World.INITIAL_ENERGY); // energy
+		child.setMem(5, 0);
+		child.setMem(6, 0); // tag
+		child.setMem(7, 0); // posture
+		
+		child.lastRuleIndex = 0;
+		child.setName(cri.name +" and " + bride.name + "'s child");
+		child.world = world;
+		child.position = childPosi;
+		child.Direction = (new Random()).nextInt(World.MAX_DIRECTION);
+		critterMutation(child);
+		
+		return null;
+	}
+	
+	private static Program getChildProgram(Critter cri, Critter bride){
+		ArrayList<Rule> criRules = cri.rules.getRules();
+		ArrayList<Rule> brideRules = bride.rules.getRules();
+		ArrayList<Rule> childRules = new ArrayList<Rule>();
+		int criSize = criRules.size();
+		int briSize = brideRules.size();
+		int childRuleSize = World.RAND.nextInt(2)==0? criSize: briSize;
+		
+		ArrayList<Rule> shortRules;
+		ArrayList<Rule> longRules;
+		int shortSize = 0;
+		int longSize = 0;
+		if(criSize < briSize){
+			shortRules = criRules;
+			longRules = brideRules;
+			shortSize = criSize;
+			longSize = briSize;
+		}else{
+			longRules = criRules;
+			shortRules = brideRules;
+			longSize = criSize;
+			shortSize = briSize;
+		}
+		
+		int firstRuleSeg = World.RAND.nextInt(shortSize);
+		int secondRueSeg = childRuleSize - firstRuleSeg;
+		
+		for(int i = 0; i < firstRuleSeg; i++){
+			childRules.add(shortRules.get(i));
+		}
+		for(int i = firstRuleSeg; i < childRuleSize; i++){
+			childRules.add(longRules.get(i));
+		}
+		
+		return new ProgramImpl(childRules);
+	}
+	
 	
 }

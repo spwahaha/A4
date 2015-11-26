@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Random;
 
 import interpret.InterpreterImpl;
 import interpret.Outcome;
@@ -40,6 +41,7 @@ public class World {
 	protected ArrayList<Critter> critters = new ArrayList<Critter>();
 	protected String name;
 	protected String constantFileName = "examples/constants.txt";
+	public static Random RAND = new Random();
 	
 	
 	public World() throws IOException{
@@ -215,12 +217,16 @@ public class World {
 	}
 	
 	public void excute(int times){
-		InterpreterImpl interpreter = null;
-		for(Critter cri:critters){
-			interpreter = new InterpreterImpl(cri,cri.rules);
-			Outcome outcome = interpreter.interpret();
-			if(outcome == null) continue;
-			excuteOutcome(cri, outcome);
+		int i = times;
+		while(i>0){
+			i--;
+			InterpreterImpl interpreter = null;
+			for(Critter cri:critters){
+				interpreter = new InterpreterImpl(cri,cri.rules);
+				Outcome outcome = interpreter.interpret();
+				if(outcome == null) continue;
+				excuteOutcome(cri, outcome);
+			}
 		}
 	}
 
@@ -321,18 +327,7 @@ public class World {
 			return;
 		}
 		
-		int c = cri.position.col;
-		int r = cri.position.row;
-		int[][] possiblePosi = {{0,1},
-								{1,1},
-								{1,0},
-								{0,-1},
-								{-1,-1},
-								{-1,0}};
-		int length = possiblePosi.length;
-		c += possiblePosi[(cri.Direction + length/2) % length][0];
-		r += possiblePosi[(cri.Direction + length/2) % length][1];
-		HexCoord backwardPosi = new HexCoord(c,r);
+		HexCoord backwardPosi = getBackPosi(cri);
 		moveTo(cri, backwardPosi);
 	}
 
@@ -393,6 +388,7 @@ public class World {
 		if(aheadInfo >= -1) return;
 
 		HexCoord forwardPosi = getFrontPosi(cri);
+		if(!validPosi(forwardPosi)) return;
 		Food food = (Food)this.map.get(forwardPosi); // get the food in front of the critter
 		int foodValue = food.value;
 		int energy = cri.getMem(4);
@@ -426,6 +422,7 @@ public class World {
 		}
 		
 		HexCoord frontPosi = getFrontPosi(cri);
+		if(!validPosi(frontPosi)) return;
 		if(this.map.get(frontPosi) == null 
 				|| this.map.get(frontPosi) instanceof Food){
 			// front is food or empty, so can serve
@@ -467,6 +464,7 @@ public class World {
 		}
 		
 		HexCoord frontPosi = getFrontPosi(cri);
+		if(!validPosi(frontPosi)) return;
 		if(!(this.map.get(frontPosi) instanceof Critter)) return;
 		Critter victim = (Critter)this.map.get(frontPosi);
 		int s1 = cri.getMem(3);
@@ -483,7 +481,7 @@ public class World {
 		
 	}
 	
-	private HexCoord getFrontPosi(Critter cri){
+	public static HexCoord getFrontPosi(Critter cri){
 		int c = cri.position.col;
 		int r = cri.position.row;
 		int[][] possiblePosi = {{0,1},
@@ -497,6 +495,23 @@ public class World {
 		return new HexCoord(c,r);
 	}
 
+	public static HexCoord getBackPosi(Critter cri){
+		int c = cri.position.col;
+		int r = cri.position.row;
+		int[][] possiblePosi = {{0,1},
+								{1,1},
+								{1,0},
+								{0,-1},
+								{-1,-1},
+								{-1,0}};
+		int length = possiblePosi.length;
+		c += possiblePosi[(cri.Direction + length/2) % length][0];
+		r += possiblePosi[(cri.Direction + length/2) % length][1];
+		HexCoord backwardPosi = new HexCoord(c,r);
+		return backwardPosi;
+	}
+	
+	
 
 
 	private void tag(Critter cri, int value) {
@@ -512,6 +527,7 @@ public class World {
 		if(value > Critter.MAX_TAG_VALUE || value < 0) return; // tag value should be valid
 		
 		HexCoord frontPosi = getFrontPosi(cri);
+		if(!validPosi(frontPosi)) return;
 		if(!(this.map.get(frontPosi) instanceof Critter)) return;
 		Critter victim = (Critter)this.map.get(frontPosi);
 		victim.setMem(6, value); // set victim tag
@@ -534,14 +550,97 @@ public class World {
 
 	private void bud(Critter cri) {
 		// TODO Auto-generated method stub
+		int cost = World.BUD_COST * cri.getComplexity();
+		cri.setMem(4, cri.getMem(4) - cost);
+		if(cri.getMem(4) <= 0){
+			die(cri);
+			return;
+		}
 		
+		HexCoord backPosi = getBackPosi(cri);
+		// invalid position, so child cannot be created 
+		if(!this.validPosi(backPosi)) return; 
+		//there is something on that position, so child cannont be created
+		if(this.map.get(backPosi)!=null) return; 
+		 // get the child
+		Critter child = cri.bud(); 
+		// update the map and critters arraylist
+		this.map.put(backPosi, child);
+		this.critters.add(child);
 	}
 
 
 
 	private void mate(Critter cri) {
 		// TODO Auto-generated method stub
+		// mate is different in consuming energy
+		// if unsuccessful, only cost energy of turn
+		int cost = 0;
+		boolean succ = false;
+		HexCoord frontPosi = getFrontPosi(cri);
+		if(!(this.map.get(frontPosi) instanceof Critter)){
+			succ = false;
+
+		}else{
+			// front is a critter
+			Critter bride = (Critter)this.map.get(frontPosi);
+			// they have to be face to face 
+			boolean faceToFace = Math.abs(cri.Direction-bride.Direction) == 3;
+			// the last action of bride must also be mate
+			boolean wantMate = bride.wantMate();
+			// the position to put child
+			HexCoord childPosi = getMatePosi(cri,bride);
+			// both of them have enough energy
+			int brideCost = World.MATE_COST * bride.getComplexity();
+			int criCost = World.MATE_COST * cri.getComplexity();
+			boolean criEnoughEner = cri.getMem(4) >= criCost;
+			boolean briEnoughEner = bride.getMem(4) >= brideCost;
+			boolean enoughEnergy = briEnoughEner && criEnoughEner;
+			
+			if(wantMate && faceToFace && enoughEnergy
+					&& childPosi!=null){
+				// finally, they can mate
+				succ = true;
+				Critter child = Critter.mate(cri, bride, childPosi, this);
+				this.map.put(childPosi, child);
+				this.critters.add(child);
+			}
+			
+		}
 		
+		if(succ){
+			cost = World.MATE_COST * cri.getComplexity();
+		}else{
+			cost = cri.getMem(3); 
+		}
+		
+		cri.setMem(4, cri.getMem(4) - cost);
+		if(cri.getMem(4) <= 0){
+			die(cri);
+			return;
+		}
+		
+	}
+
+
+
+	private HexCoord getMatePosi(Critter cri, Critter bride) {
+		// TODO Auto-generated method stub
+		HexCoord criBack = getBackPosi(cri);
+		HexCoord brideBack = getBackPosi(cri);
+		boolean criValid = validPosi(criBack);
+		boolean briValid = validPosi(brideBack);
+		if(!criValid && !briValid) return null; // no space for child
+		//valid position and there is nothing on this position
+		criValid = criValid && this.map.get(criBack) == null;
+		briValid = briValid && this.map.get(briValid) == null;
+		// if both valid return random one
+		if(criValid && briValid) return (new Random()).nextDouble() > 0.5?
+													criBack:brideBack;
+		// return the valid one
+		if(criValid) return criBack;
+		if(briValid) return brideBack;
+		return null;
 	}
 
 	

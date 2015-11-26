@@ -172,5 +172,11 @@ public class ProgramImpl implements Program,Swapable {
 		// TODO Auto-generated method stub
 		return rules.contains(node);
 	}
+	
+	
+	public Rule getRule(int n){
+		if(n >= rules.size()) return null;
+		return this.rules.get(n);
+	}
 
 }

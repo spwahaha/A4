@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.ArrayList;
+
 /**
  * An abstraction of a critter program.
  */
@@ -23,4 +25,8 @@ public interface Program extends Node {
     Program mutate(int index, Mutation m);
     
     Program copy();
+    
+    Rule getRule(int n);
+    
+    ArrayList<Rule> getRules();
 }

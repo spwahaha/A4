@@ -86,4 +86,9 @@ public class Rule implements Node {
 		// TODO Auto-generated method stub
 		return this.condition==node || this.command==node;
 	}
+	
+	public boolean isActionMate(){
+		if(this.command.action==null) return false;
+		return this.command.action.kind == Action.Kind.MATE;
+	}
 }
