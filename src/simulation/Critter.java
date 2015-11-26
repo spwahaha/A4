@@ -1,7 +1,9 @@
 package simulation;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -30,12 +32,13 @@ public class Critter implements Placeable {
 	protected World world;
 	protected String name;
 	protected int lastRuleIndex;
-	protected static final int MAX_TAG_VALUE = 99;
+	public static final int MAX_TAG_VALUE = 99;
 	protected static final int MAX_POSTURE_VALUE = 99;
 	protected static final int INITIAL_SIZE = 1;
 	protected static final double MUTATION_PROBABILITY = 1.0 / 4;
 	protected static final int MUTATION_CATEGORY = 2;
 	protected static final int MUTATION_ATTR_CATEGORY = 3;
+	public static final int MAX_MEM_INEDX = 7;
 	
 	public Critter(){
 		this.mem = new int[8];
@@ -44,32 +47,38 @@ public class Critter implements Placeable {
 	}
 	
 	
-	public Critter(String fileName){
-		Tokenizer t = null;
-		try {
-			t = new Tokenizer(new FileReader("examples/example-critter.txt"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public Critter(String fileName) throws IOException{
+		
+		BufferedReader br = new BufferedReader(new FileReader(fileName));
+		String[] lines = new String[7];
+		for(int i = 0; i < lines.length; i++){
+			lines[i] = br.readLine();
 		}
-//		Critter cr1 = new Critter();
-		t.next(); t.next();
-		String name = t.next().toString().split(":")[1];
-		t.next(); t.next(); 
-		int memsize = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int defense = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int offense = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int size = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int energy = Integer.parseInt(t.next().toString());
-		t.next(); t.next();
-		int posture = Integer.parseInt(t.next().toString());
-		// finish reading the critter attribute
-		// then parseProgram
-//		System.out.println(t.peek().toString());
+		
+		String name = "";
+		int memsize =0;
+		int defense = 0;
+		int offense = 0;
+		int size = 0;
+		int energy = 0;
+		int posture = 0;
+		
+		for(int i = 0; i < lines.length; i++){
+			String[] attri = lines[i].split(":");
+			switch(attri[0].toLowerCase()){
+			case "species": name = attri[1]; break;
+			case "defense": defense = Integer.parseInt(attri[1].trim()); break;
+			case "offense": offense = Integer.parseInt(attri[1].trim()); break;
+			case "size":   size = Integer.parseInt(attri[1].trim()); break;
+			case "energy": energy = Integer.parseInt(attri[1].trim()); break;
+			case "posture": posture = Integer.parseInt(attri[1].trim()); break;
+
+			}
+		}
+		
+		Tokenizer t = null;
+		t = new Tokenizer(br);
+
 		Parser parser = new ParserImpl();
 		Program prog = parser.parse(t);
 		this.mem = new int[8];
@@ -81,7 +90,7 @@ public class Critter implements Placeable {
 		this.setMem(4, energy);
 		this.setMem(7, posture);
 		this.setProgram(prog);
-		System.out.println("critter success");
+//		System.out.println("critter success");
 		t.close();
 	}
 	
@@ -105,7 +114,23 @@ public class Critter implements Placeable {
 	}
 	
 	public void setMem(int index, int n){
-		this.mem[index] = n;
+		
+		if(index < 0 || index > 7) return;
+		switch(index){
+		case 0:{
+			if(n >=8) this.mem[0] = n;
+			return;
+		}
+		case 6:
+		case 7:
+			{
+				if(n >=0 && n <= 99) this.mem[6] = n;
+				return;
+			}
+		default: 
+			this.mem[index] = n; return;
+		}
+		
 	}
 	
 	public void setProgram(Program pro){
@@ -198,8 +223,7 @@ public class Critter implements Placeable {
 	
 	public int random(int n){
 		if(n < 2) return 0;
-		Random rand = new Random();
-		return rand.nextInt(n);
+		return World.RAND.nextInt(n);
 	}
 	
 	public int getAppearance(){
@@ -235,7 +259,7 @@ public class Critter implements Placeable {
 		child.setName(this.name + "'s child");
 		child.world = this.world;
 		child.position = World.getBackPosi(this);
-		child.Direction = (new Random()).nextInt(World.MAX_DIRECTION);
+		child.Direction = World.RAND.nextInt(World.MAX_DIRECTION);
 		// bud with mutation
 		critterMutation(child);
 		return child;
@@ -245,15 +269,14 @@ public class Critter implements Placeable {
 
 	private static void critterMutation(Critter cri) {
 		// TODO Auto-generated method stub
-		Random rand = new Random();
-		double prob = rand.nextDouble();
+		double prob = World.RAND.nextDouble();
 		if(prob <= Critter.MUTATION_PROBABILITY){
-			int category = rand.nextInt(Critter.MUTATION_CATEGORY);
+			int category = World.RAND.nextInt(Critter.MUTATION_CATEGORY);
 			switch(category){
 				case 0:{ // change attribute
 					// memory, defense, offense is 0, 1, 2
-					int attribute = rand.nextInt(Critter.MUTATION_ATTR_CATEGORY);
-					int increment = rand.nextInt(2) == 0? -1:+1;// 
+					int attribute = World.RAND.nextInt(Critter.MUTATION_ATTR_CATEGORY);
+					int increment = World.RAND.nextInt(2) == 0? -1:+1;// 
 					cri.setMem(attribute, cri.getMem(attribute) + increment);
 					break;
 				}
@@ -304,7 +327,7 @@ public class Critter implements Placeable {
 		child.setName(cri.name +" and " + bride.name + "'s child");
 		child.world = world;
 		child.position = childPosi;
-		child.Direction = (new Random()).nextInt(World.MAX_DIRECTION);
+		child.Direction = World.RAND.nextInt(World.MAX_DIRECTION);
 		critterMutation(child);
 		
 		return null;

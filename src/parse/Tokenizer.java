@@ -59,6 +59,12 @@ public class Tokenizer implements Iterator<Token> {
         buf = new StringBuilder();
         lineNo = 1;
     }
+    
+    public Tokenizer(Reader r, int line){
+        br = new BufferedReader(r);
+        buf = new StringBuilder();
+        lineNo = line;    	
+    }
 
     /**
      * Returns {@code true} if the iteration has more meaningful elements. (In

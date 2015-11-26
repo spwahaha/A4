@@ -21,8 +21,14 @@ public class HexCoord implements Placeable{
 		this.row = row;
 	}
 	
-	public boolean equals(HexCoord hex){
-		return this.col == hex.col && this.row==hex.row;
+	public boolean equals(Object hex){
+		if(!(hex instanceof HexCoord)) return false;
+		return this.col == ((HexCoord)hex).col && this.row==((HexCoord)hex).row;
+	}
+	
+	public int hashCode(){
+		return this.col*this.row;
+		
 	}
 
 	

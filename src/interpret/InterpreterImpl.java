@@ -74,10 +74,15 @@ public class InterpreterImpl implements Interpreter {
 			Action action = command.getAction();
 			if(action!=null){
 				switch(action.getKind()){
-				case SERVE:
+				case SERVE:{
+					int expr = interpretExpr(((UniaryAction)action).getExpr());
+					outcome = new OutcomeImpl(action.getKind().toString(), expr);
+					break;
+				}
 				case TAG:
 					{
 						int expr = interpretExpr(((UniaryAction)action).getExpr());
+						if(expr<0 || expr > Critter.MAX_TAG_VALUE) return null;
 						outcome = new OutcomeImpl(action.getKind().toString(), expr);
 						break;
 					}
@@ -129,7 +134,10 @@ public class InterpreterImpl implements Interpreter {
 			case PLUS: return left + right;
 			case MINUS: return left - right;
 			case MUL: return left * right;
-			case DIV: return left / right;
+			case DIV: {
+				if(right==0) return 0;
+				return left / right;
+			}
 			case MOD: return left % right;
 			}
 		}
@@ -153,9 +161,12 @@ public class InterpreterImpl implements Interpreter {
 		if(expression instanceof NamedUnaryExpr){
 			int expr = interpretExpr(((NamedUnaryExpr)expression).getExpr());
 			switch(expression.getKind()){
-			case NEARBY: return critter.nearby(expr);
+			case NEARBY: return critter.nearby(expr % 6);
 			case RANDOM: return critter.random(expr);
-			case MEM: return critter.getMem(expr);
+			case MEM:{
+				if(expr > Critter.MAX_MEM_INEDX || expr < 0) return 0;
+				return critter.getMem(expr);	
+			}
 			case AHEAD: return critter.ahead(expr);
 			}
 		}else return critter.smell(); // SMELL

@@ -54,6 +54,7 @@ public class World {
 	public World(String filename) throws IOException{
 		loadWorldFromFile(filename);
 		loadConstant(constantFileName);
+		System.out.println("load world successfully");
 	}
 	
 	
@@ -70,7 +71,7 @@ public class World {
 		// TODO Auto-generated method stub
 		this.map = new Hashtable<HexCoord,Placeable>();
 		// read world file and many object by world file
-		BufferedReader br = new BufferedReader(new FileReader("examples/world.txt"));
+		BufferedReader br = new BufferedReader(new FileReader(filename));
 		String line = br.readLine();
 //		World world = new World();
 		while(line!=null){
@@ -111,13 +112,14 @@ public class World {
 			if(line.startsWith("critter")){
 				String[] critterAtr = line.split(" ");
 				String critterFilename = critterAtr[1];
+				critterFilename = filename.split("/")[0] + "/" + critterFilename;
 				int col = Integer.parseInt(critterAtr[2]);
 				int row = Integer.parseInt(critterAtr[3]);
 				int dir = Integer.parseInt(critterAtr[4]);
 				HexCoord posi = new HexCoord(col, row);
-				Critter cri1 = new Critter(filename);
+				Critter cri1 = new Critter(critterFilename);
 				cri1.setPosition(posi);
-				cri1.setDirection(dir);
+				cri1.setDirection(dir % 6);
 				cri1.setWorld(this);
 				this.addObj(cri1, posi);
 			}
@@ -136,7 +138,7 @@ public class World {
 			switch(info[0]){
 			case "BASE_DAMAGE": World.BASE_DAMAGE = Integer.parseInt(info[1]);
 								break;
-			case "DAMAGE_INC": World.DAMAGE_INC = Integer.parseInt(info[1]);
+			case "DAMAGE_INC": World.DAMAGE_INC = Double.parseDouble(info[1]);
 								break;
 			case "ENERGY_PER_SIZE": World.ENERGY_PER_SIZE = Integer.parseInt(info[1]);
 									break;
@@ -156,6 +158,8 @@ public class World {
 									break;
 			case "MOVE_COST": World.MOVE_COST = Integer.parseInt(info[1]);
 									break;
+			case "ATTACK_COST": World.ATTACK_COST = Integer.parseInt(info[1]);
+									break;
 			case "GROW_COST": World.GROW_COST = Integer.parseInt(info[1]);
 									break;
 			case "BUD_COST": World.BUD_COST = Integer.parseInt(info[1]);
@@ -170,9 +174,11 @@ public class World {
 									break;
 			case "MIN_MEMORY": World.MIN_MEMORY = Integer.parseInt(info[1]);
 									break;
-			default: System.out.println("Unknown constant");
+			default: System.out.println("Unknown constant" + info[0]);
 			
 			}
+			
+			line = br.readLine();
 		}
 		
 	}
@@ -205,7 +211,7 @@ public class World {
 	}
 	
 	public Placeable getObj(HexCoord posi){
-		return map.get(posi);
+		return this.map.get(posi);
 	}
 	
 	public boolean validPosi(HexCoord posi){
@@ -221,7 +227,8 @@ public class World {
 		while(i>0){
 			i--;
 			InterpreterImpl interpreter = null;
-			for(Critter cri:critters){
+			for(int j = 0; j < critters.size(); j++){
+				Critter cri = critters.get(j);
 				interpreter = new InterpreterImpl(cri,cri.rules);
 				Outcome outcome = interpreter.interpret();
 				if(outcome == null) continue;
@@ -238,7 +245,7 @@ public class World {
 		int value = outcome.getValue();
 		switch(actionName){
 		case "wait":{
-			cri.setMem(4, cri.getMem(4) + World.SOLAR_FLUX);
+			cri.setMem(4, cri.getMem(4) + cri.getMem(3) * World.SOLAR_FLUX);
 			break;
 		}
 		case "forward":{
@@ -335,7 +342,7 @@ public class World {
 		// TODO Auto-generated method stub
 		if(!this.validPosi(destiny)) return; // if the forward position is invalid, move unsuccessfully
 		// update energy
-		if(this.map.get(destiny) != null){
+		if(this.map.get(destiny) == null){
 			// if the there is nothing in the forwardposition
 			// then move forward
 			// set the original position null
@@ -357,6 +364,7 @@ public class World {
 			return;
 		}
 		cri.Direction = (cri.Direction - 1) % World.MAX_DIRECTION;
+		if(cri.Direction < 0) cri.Direction +=6;
 	}
 
 
@@ -370,6 +378,8 @@ public class World {
 			return;
 		}
 		cri.Direction = (cri.Direction + 1) % World.MAX_DIRECTION;
+		if(cri.Direction < 0) cri.Direction +=6;
+
 	}
 
 
@@ -395,10 +405,11 @@ public class World {
 		int maxEnergy = cri.getMem(3) * World.ENERGY_PER_SIZE;
 		if(foodValue + energy < maxEnergy){
 			// eat all the food and so remove food from the world
-			cri.setMem(4, foodValue + maxEnergy);
+			cri.setMem(4, foodValue + energy);
 			this.map.remove(forwardPosi);
 		}else{
 			foodValue = energy + foodValue - maxEnergy;
+			cri.setMem(4, maxEnergy);
 			food.setFoodValue(foodValue);
 		}
 	}
@@ -436,14 +447,14 @@ public class World {
 			
 			if(value >= cri.getMem(4)){
 				// served value is larger than cri.energy
-				food.setFoodValue(cri.getMem(4));
+				food.setFoodValue(food.getFoodValue() + cri.getMem(4));
 				cri.setMem(4, 0);
 			}else{
-				food.setFoodValue(value);
+				food.setFoodValue(food.getFoodValue() + value);
 				cri.setMem(4, cri.getMem(4) - value);
 			}
 			this.map.put(frontPosi, food); // put food in the world
-			if(cri.getMem(4) < 0){
+			if(cri.getMem(4) <= 0){
 				die(cri);
 			}
 		}
@@ -635,7 +646,7 @@ public class World {
 		criValid = criValid && this.map.get(criBack) == null;
 		briValid = briValid && this.map.get(briValid) == null;
 		// if both valid return random one
-		if(criValid && briValid) return (new Random()).nextDouble() > 0.5?
+		if(criValid && briValid) return World.RAND.nextDouble() > 0.5?
 													criBack:brideBack;
 		// return the valid one
 		if(criValid) return criBack;

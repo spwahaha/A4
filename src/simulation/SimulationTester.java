@@ -19,9 +19,94 @@ import parse.Tokenizer;
 
 public class SimulationTester {
 
+	
+	
+	
+	public void Worldtest() throws IOException {
+		String fileName = "examples/world.txt";
+		World world = new World(fileName);
+		world.excute(2);
+		System.out.println("finish excute");
+	}
+	
+	
+	public void Waittest() throws IOException {
+		String fileName = "examples/waitworld.txt";
+		World world = new World(fileName);
+		int energy1 = world.critters.get(0).getMem(4);
+		world.excute(2);
+		int energy2 = world.critters.get(0).getMem(4);
+		assertEquals(energy1 + 2,energy2);
+		System.out.println("finish excute");
+	}	
+	
+	
+	
+	public void turntest() throws IOException {
+		String fileName = "examples/turnworld.txt";
+		System.out.println(-1 % 6);
+		World world = new World(fileName);
+		int dir11 = world.critters.get(0).getDirection(); //3  turn left
+		int dir21 = world.critters.get(1).getDirection(); //3  turn right
+		world.excute(4);
+		int energy2 = world.critters.get(0).getMem(4);
+		assertEquals(5,world.critters.get(0).getDirection());
+		assertEquals(1,world.critters.get(1).getDirection());		
+		System.out.println("finish excute");
+	}		
+	
+	
+	public void eattest() throws IOException {
+		String fileName = "examples/eatworld.txt";
+		World world = new World(fileName);
+		int dir11 = world.critters.get(0).getDirection(); //3  turn left
+		int dir21 = world.critters.get(1).getDirection(); //3  turn right
+		int energy11 = world.critters.get(0).getMem(4);
+		int energy21 = world.critters.get(1).getMem(4); 
+		world.excute(4);
+		int energy12 = world.critters.get(0).getMem(4);
+		int energy22 = world.critters.get(1).getMem(4); 
+
+		System.out.println("finish excute");
+	}	
+	
 	@Test
-	public void test() throws IOException {
-		String fileName = "example-critter.txt";
+	public void movetest() throws IOException {
+		String fileName = "examples/moveworld.txt";
+		World world = new World(fileName);
+		int dir11 = world.critters.get(0).getDirection(); //3  turn left
+		int dir21 = world.critters.get(1).getDirection(); //3  turn right
+		int energy11 = world.critters.get(0).getMem(4);
+		int energy21 = world.critters.get(1).getMem(4); 
+		world.excute(4);
+		int energy12 = world.critters.get(0).getMem(4);
+		int energy22 = world.critters.get(1).getMem(4); 
+		assertEquals(new HexCoord(4,3), world.critters.get(0).position);
+		assertEquals(new HexCoord(4,9), world.critters.get(1).position);
+	}		
+	
+	
+
+	
+	@Test
+	public void servetest() throws IOException {
+		String fileName = "examples/serveworld.txt";
+		World world = new World(fileName);
+		int dir11 = world.critters.get(0).getDirection(); //3  turn left
+		int dir21 = world.critters.get(1).getDirection(); //3  turn right
+		int energy11 = world.critters.get(0).getMem(4);
+		int energy21 = world.critters.get(1).getMem(4); 
+		world.excute(4);
+		int energy12 = world.critters.get(0).getMem(4);
+		int energy22 = world.critters.get(1).getMem(4); 
+		assertEquals(new HexCoord(4,3), world.critters.get(0).position);
+		assertEquals(new HexCoord(4,9), world.critters.get(1).position);
+	}		
+	
+	
+	
+	public void Crittertest() throws IOException {
+		String fileName = "examples/example-critter.txt";
 		Critter cri = new Critter(fileName);
 		ArrayList<Critter> cris = new ArrayList<Critter>();
 		cris.add(cri);
