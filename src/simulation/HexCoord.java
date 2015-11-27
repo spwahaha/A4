@@ -30,6 +30,10 @@ public class HexCoord implements Placeable{
 		return this.col*this.row;
 		
 	}
+	
+	public String toString(){
+		return "c" + this.col + "r" + this.row;
+	}
 
 	
 	

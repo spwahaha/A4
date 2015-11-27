@@ -45,6 +45,8 @@ public class World {
 	protected String constantFileName = "examples/constants.txt";
 	public static Random RAND = new Random();
 	protected int steps;
+	int size;
+	int maxSize;
 	
 	public World() throws IOException{
 		loadConstant(constantFileName);
@@ -54,8 +56,8 @@ public class World {
 
 
 	public World(String filename) throws IOException{
-		loadWorldFromFile(filename);
 		loadConstant(constantFileName);
+		loadWorldFromFile(filename);
 		System.out.println("load world successfully");
 	}
 	
@@ -68,13 +70,15 @@ public class World {
 		this.Col = World.COLUMNS;
 		this.name = World.RANDOM_WORLD_NAME;
 		steps = 0;
+		this.maxSize = this.Row * this.Col / 2;
+		System.out.println(this.maxSize);
+		this.size = 0;
 		int rockNumber =  (int) (this.Row * this.Col * World.RANDOM_ROCK_FACTOR);
 		for(int i = 0; i < rockNumber; i++){
 			int r = World.RAND.nextInt(this.Row);
 			int c = World.RAND.nextInt(this.Col);
 			this.addObj(new Rock(), new HexCoord(c,r));
 		}
-		
 	}
 
 
@@ -138,6 +142,8 @@ public class World {
 			line = br.readLine();
 		}
 		br.close();
+		this.maxSize = this.Row * this.Col / 2;
+		this.size = 0;
 	}
 
 	
@@ -211,6 +217,7 @@ public class World {
 	public void setSize(int col, int row){
 		this.Col = col;
 		this.Row = row;
+		this.maxSize = this.Col * this.Row / 2;
 	}
 	
 	/** add critter, food or rock in the world
@@ -218,10 +225,15 @@ public class World {
 	public boolean addObj(Placeable placeObj, HexCoord posi){
 		if(!this.validPosi(posi)) return false; // try to place on invalid place
 		if(map.get(posi)!=null) return false; // there is something in this position posi
+		if(this.size >= this.maxSize){
+			System.out.println("The world is too crowded");
+			return false;
+		}
 		if(placeObj instanceof Critter){
 			critters.add((Critter)placeObj);
 		}
 		map.put(posi, placeObj);
+		size ++;
 		return true;
 	}
 	

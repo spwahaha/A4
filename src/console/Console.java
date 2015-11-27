@@ -129,7 +129,8 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	while(n > 0){
+    	int i = n * 15;
+    	while(n > 0 && i > 0) {
     		try {
 				Critter cri = new Critter(filename);
 				int r = this.world.RAND.nextInt(this.world.getRow());
@@ -137,6 +138,7 @@ public class Console {
 				cri.setPosition(new HexCoord(c,r));
 				boolean succ = this.world.addObj(cri, cri.getPosition());
 				if(succ) n--;
+				i--;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -144,7 +146,7 @@ public class Console {
     		
     	}
     	
-    	System.out.println("load critters successfully~: " + number + "critters");
+    	System.out.println("load over~: ");
     }
 
     /**
@@ -178,17 +180,18 @@ public class Console {
 
     private void printMap() {
 		// TODO Auto-generated method stub
-		int row = this.world.getRow();
-		int col = this.world.getCol();
-		int cnt1 = row - col + 2;
-		int cnt2 = row - col + 1;
+		int row = this.world.getRow() - 1;
+		int col = this.world.getCol() - 2;
+		int cnt1 = this.world.getCol() / 2 + this.world.getCol() % 2;
+		int cnt2 = this.world.getCol() / 2;
 		
 		while(col>0){
 			for(int j = col-1, k = 0; k < cnt1; k++){
-				int r = 2 * k;
-				int c = j + k;
+				int c = 2 * k;
+				int r = j + k;
 				HexCoord posi = new HexCoord(c,r);
 				Placeable pla = this.world.getObj(posi);
+//				System.out.print(posi+"  ");
 				if(pla == null) System.out.print("-   ");
 				else if(pla instanceof Rock)
 					System.out.print("#   ");
@@ -203,10 +206,11 @@ public class Console {
 			System.out.print("  ");		
 			if(col==1) return;
 			for(int j = col-1, k = 0; k < cnt2; k++){
-				int r = 2 * k;
-				int c = j + k;
+				int c = 2 * k + 1;
+				int r = j + k;
 				HexCoord posi = new HexCoord(c,r);
 				Placeable pla = this.world.getObj(posi);
+//				System.out.print(posi+"  ");
 				if(pla == null) System.out.print("-   ");
 				else if(pla instanceof Rock)
 					System.out.print("#   ");
