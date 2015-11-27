@@ -6,7 +6,7 @@ size: 1
 energy: 500
 posture: 17
 POSTURE != 17 --> POSTURE := 17; // we are species 17!
-{ENERGY > SIZE * 400 and SIZE < 7} --> bud;
+{ENERGY > SIZE * 400 and SIZE < 7} --> left;
 nearby[3] = 0 and ENERGY > 2500 --> bud;
 {ENERGY > SIZE * 400 and SIZE < 7} --> grow;
 ahead[1] < -1 and ENERGY < 500 * SIZE --> eat;

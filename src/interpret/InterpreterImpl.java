@@ -37,19 +37,19 @@ public class InterpreterImpl implements Interpreter {
 	}
 	
 	
-	@Override
-	public Outcome interpret(Program p) {
+	public Outcome interpret(Program p, boolean doUpdate) {
 		// TODO Auto-generated method stub
 		Outcome outcome = null;
 		ArrayList<Rule> rules = ((ProgramImpl)program).getRules();
 		critter.setPass(0);
 		for(int i = 0; i < World.MAX_RULES_PER_TURN; i++){
 			Rule rule = rules.get(i % rules.size());
-			outcome = InterpretRule(rule);
+			outcome = InterpretRule(rule,doUpdate);
 			if(outcome==null){
 				critter.setPass(critter.getPass() + 1);
 			}else{
-				critter.setLastRule(i);
+				if(doUpdate)
+					critter.setLastRule(i);
 				return outcome;
 			}
 
@@ -58,8 +58,15 @@ public class InterpreterImpl implements Interpreter {
 		return new OutcomeImpl("wait", -1);
 	}
 	
+
+	@Override
+	public Outcome interpret(Program p) {
+		// TODO Auto-generated method stub
+		return interpret(p,true);
+	}
 	
-	private Outcome InterpretRule(Rule rule) {
+	
+	private Outcome InterpretRule(Rule rule, boolean doUpdate) {
 		// TODO Auto-generated method stub
 		boolean condition = interpretCondition(rule.getCondition());
 		Outcome outcome = null;
@@ -69,7 +76,8 @@ public class InterpreterImpl implements Interpreter {
 			for(Update update:updates){
 				int index=  interpretExpr(update.getIndex());
 				int expr = interpretExpr(update.getExpr());
-				critter.setMem(index, expr);
+				if(doUpdate)
+					critter.setMem(index, expr);
 			}
 			Action action = command.getAction();
 			if(action!=null){
@@ -184,6 +192,7 @@ public class InterpreterImpl implements Interpreter {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	
 	
 }

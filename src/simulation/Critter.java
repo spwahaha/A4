@@ -12,6 +12,8 @@ import ast.MutationFactory;
 import ast.Program;
 import ast.ProgramImpl;
 import ast.Rule;
+import interpret.InterpreterImpl;
+import interpret.Outcome;
 import parse.Parser;
 import parse.ParserImpl;
 import parse.Tokenizer;
@@ -90,6 +92,7 @@ public class Critter implements Placeable {
 		this.setMem(4, energy);
 		this.setMem(7, posture);
 		this.setProgram(prog);
+		this.setDirection(World.RAND.nextInt(World.MAX_DIRECTION));
 //		System.out.println("critter success");
 		t.close();
 	}
@@ -124,7 +127,7 @@ public class Critter implements Placeable {
 		case 6:
 		case 7:
 			{
-				if(n >=0 && n <= 99) this.mem[6] = n;
+				if(n >=0 && n <= 99) this.mem[index] = n;
 				return;
 			}
 		default: 
@@ -221,6 +224,26 @@ public class Critter implements Placeable {
 		return 0;
 	}
 	
+	public String getName(){
+		return this.name;
+	}
+	
+	public void printMem(){
+		System.out.println("The first 8 memory is ");
+		System.out.println("Memory size: " + this.mem[0]);
+		System.out.println("Defensive ability: " + this.mem[1]);
+		System.out.println("Offensive ability: " + this.mem[2]);
+		System.out.println("Size: " + this.mem[3]);
+		System.out.println("Energy: " + this.mem[4]);
+		System.out.println("Pass number: " + this.mem[5]);
+		System.out.println("Tag: " + this.mem[6]);
+		System.out.println("Posture: " + this.mem[7]);
+	}
+	
+	public Program getRules(){
+		return this.rules;
+	}
+	
 	public int random(int n){
 		if(n < 2) return 0;
 		return World.RAND.nextInt(n);
@@ -232,6 +255,14 @@ public class Critter implements Placeable {
 	
 	public void setLastRule(int n){
 		this.lastRuleIndex = n;
+	}
+	
+	public int getLastRuleIndex(){
+		return this.lastRuleIndex;
+	}
+	
+	public HexCoord getPosition(){
+		return this.position;
 	}
 	
 	public int getComplexity(){
@@ -292,8 +323,9 @@ public class Critter implements Placeable {
 	}
 	
 	public boolean wantMate(){
-		Rule lastRul = this.rules.getRule(this.lastRuleIndex);
-		return lastRul.isActionMate();
+		InterpreterImpl inter = new InterpreterImpl(this,this.rules);
+		Outcome out = inter.interpret(this.rules,false);//interpret but do not update info
+		return out.getAction().equalsIgnoreCase("mate");
 	}
 	
 	public static Critter mate(Critter cri, Critter bride, HexCoord childPosi, World world){
@@ -330,7 +362,7 @@ public class Critter implements Placeable {
 		child.Direction = World.RAND.nextInt(World.MAX_DIRECTION);
 		critterMutation(child);
 		
-		return null;
+		return child;
 	}
 	
 	private static Program getChildProgram(Critter cri, Critter bride){

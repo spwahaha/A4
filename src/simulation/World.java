@@ -33,6 +33,8 @@ public class World {
 	protected static int INITIAL_ENERGY;
 	protected static int MIN_MEMORY;
 	protected static final int MAX_DIRECTION = 6;
+	private static final String RANDOM_WORLD_NAME = "random world";
+	private static final double RANDOM_ROCK_FACTOR = 1.0/5;
 	
 	
 	protected Hashtable<HexCoord, Placeable> map;
@@ -42,7 +44,7 @@ public class World {
 	protected String name;
 	protected String constantFileName = "examples/constants.txt";
 	public static Random RAND = new Random();
-	
+	protected int steps;
 	
 	public World() throws IOException{
 		loadConstant(constantFileName);
@@ -58,11 +60,20 @@ public class World {
 	}
 	
 	
-	private void loadRandomWorld() {// not finished yet
+	private void loadRandomWorld() {
 		// TODO Auto-generated method stub
+		// new world with some random rocks
 		this.map = new Hashtable<HexCoord,Placeable>();
 		this.Row = World.ROWS;
 		this.Col = World.COLUMNS;
+		this.name = World.RANDOM_WORLD_NAME;
+		steps = 0;
+		int rockNumber =  (int) (this.Row * this.Col * World.RANDOM_ROCK_FACTOR);
+		for(int i = 0; i < rockNumber; i++){
+			int r = World.RAND.nextInt(this.Row);
+			int c = World.RAND.nextInt(this.Col);
+			this.addObj(new Rock(), new HexCoord(c,r));
+		}
 		
 	}
 
@@ -70,6 +81,7 @@ public class World {
 	private void loadWorldFromFile(String filename) throws IOException {
 		// TODO Auto-generated method stub
 		this.map = new Hashtable<HexCoord,Placeable>();
+		steps = 0;
 		// read world file and many object by world file
 		BufferedReader br = new BufferedReader(new FileReader(filename));
 		String line = br.readLine();
@@ -183,6 +195,13 @@ public class World {
 		
 	}
 	
+	public int getRow(){
+		return this.Row;
+	}
+	
+	public int getCol(){
+		return this.Col;
+	}
 	
 	
 	public void setName(String name){
@@ -214,6 +233,12 @@ public class World {
 		return this.map.get(posi);
 	}
 	
+	public int getObjNumber(){
+		return this.map.size();
+	}
+	
+	
+	
 	public boolean validPosi(HexCoord posi){
 		int c = posi.col;
 		int r = posi.row;
@@ -232,12 +257,20 @@ public class World {
 				interpreter = new InterpreterImpl(cri,cri.rules);
 				Outcome outcome = interpreter.interpret();
 				if(outcome == null) continue;
+				System.out.println(cri.name + "     "+ outcome.getAction());
 				excuteOutcome(cri, outcome);
 			}
 		}
+		steps += times;
+	}
+	
+	public int getSteps(){
+		return this.steps;
 	}
 
-
+	public int getCritterNumber(){
+		return this.critters.size();
+	}
 
 	private void excuteOutcome(Critter cri, Outcome outcome) {
 		// TODO Auto-generated method stub

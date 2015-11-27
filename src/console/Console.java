@@ -1,11 +1,22 @@
 package console;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import ast.ProgramImpl;
+import ast.Rule;
+import simulation.Critter;
+import simulation.Food;
+import simulation.HexCoord;
+import simulation.Placeable;
+import simulation.Rock;
+import simulation.World;
 
 /** The console user interface for Assignment 5. */
 public class Console {
     private Scanner scan;
     public boolean done;
+	World world = null;
 
     //TODO world representation...
 
@@ -22,7 +33,7 @@ public class Console {
      * Processes a single console command provided by the user.
      */
     void handleCommand() {
-        String command = scan.next();
+        String command = scan.next().toLowerCase();
         switch (command) {
         case "new": {
             newWorld();
@@ -30,7 +41,12 @@ public class Console {
         }
         case "load": {
             String filename = scan.next();
-            loadWorld(filename);
+            try {
+				loadWorld(filename);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             break;
         }
         case "critters": {
@@ -80,14 +96,24 @@ public class Console {
      */
     private void newWorld() {
         //TODO implement
+    	try {
+			world = new World();
+	    	System.out.println("new world");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
 
     /**
      * Starts new simulation with world specified in filename.
      * @param filename
+     * @throws IOException 
      */
-    private void loadWorld(String filename) {
+    private void loadWorld(String filename) throws IOException {
         //TODO implement
+    	world = new World(filename);
     }
 
     /**
@@ -98,6 +124,27 @@ public class Console {
      */
     private void loadCritters(String filename, int n) {
         //TODO implement
+    	int number = n;
+    	if(this.world==null){
+    		System.out.println("NO WORLD NOW!!!");
+    		return;
+    	}
+    	while(n > 0){
+    		try {
+				Critter cri = new Critter(filename);
+				int r = this.world.RAND.nextInt(this.world.getRow());
+				int c = this.world.RAND.nextInt(this.world.getCol());
+				cri.setPosition(new HexCoord(c,r));
+				boolean succ = this.world.addObj(cri, cri.getPosition());
+				if(succ) n--;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}
+    	
+    	System.out.println("load critters successfully~: " + number + "critters");
     }
 
     /**
@@ -106,6 +153,11 @@ public class Console {
      */
     private void advanceTime(int n) {
         //TODO implement
+    	if(this.world==null){
+    		System.out.println("NO WORLD NOW!!!");
+    		return;
+    	}
+    	this.world.excute(n);
     }
 
     /**
@@ -114,15 +166,107 @@ public class Console {
      */
     private void worldInfo() {
         //TODO implement
+    	if(this.world==null){
+    		System.out.println("NO WORLD NOW!!!");
+    		return;
+    	}
+    	System.out.println("The current step is NO: " + this.world.getSteps());
+    	System.out.println("The number of critters is: " + this.world.getCritterNumber());
+    	// start to draw the world map
+    	printMap();
     }
 
-    /**
+    private void printMap() {
+		// TODO Auto-generated method stub
+		int row = this.world.getRow();
+		int col = this.world.getCol();
+		int cnt1 = row - col + 2;
+		int cnt2 = row - col + 1;
+		
+		while(col>0){
+			for(int j = col-1, k = 0; k < cnt1; k++){
+				int r = 2 * k;
+				int c = j + k;
+				HexCoord posi = new HexCoord(c,r);
+				Placeable pla = this.world.getObj(posi);
+				if(pla == null) System.out.print("-   ");
+				else if(pla instanceof Rock)
+					System.out.print("#   ");
+				else if(pla instanceof Food){
+					System.out.print("f   ");
+				}
+				else if(pla instanceof Critter){
+					System.out.print(((Critter)pla).getDirection() + "   ");
+				}
+			}
+			System.out.println();
+			System.out.print("  ");		
+			if(col==1) return;
+			for(int j = col-1, k = 0; k < cnt2; k++){
+				int r = 2 * k;
+				int c = j + k;
+				HexCoord posi = new HexCoord(c,r);
+				Placeable pla = this.world.getObj(posi);
+				if(pla == null) System.out.print("-   ");
+				else if(pla instanceof Rock)
+					System.out.print("#   ");
+				else if(pla instanceof Food){
+					System.out.print("f   ");
+				}
+				else if(pla instanceof Critter){
+					System.out.print(((Critter)pla).getDirection() + "   ");
+				}
+			}
+			System.out.println();
+			col--;
+		}
+	}
+
+	/**
      * Prints description of the contents of hex (c,r).
      * @param c column of hex
      * @param r row of hex
      */
     private void hexInfo(int c, int r) {
         //TODO implement
+    	if(this.world==null){
+    		System.out.println("NO WORLD NOW!!!");
+    		return;
+    	}
+    	Placeable pla = this.world.getObj(new HexCoord(c,r));
+    	if(pla == null){
+    		System.out.println("Nothing is here~~");
+    		return;
+    	}
+    	
+    	if(pla instanceof Rock){
+    		System.out.println("Here is a rock");
+    		return;
+    	}
+    	
+    	if(pla instanceof Food){
+    		System.out.println("Here is some food: " + ((Food)pla).getFoodValue());
+    		return;
+    	}
+    	
+    	if(pla instanceof Critter){
+    		System.out.println("Here is a critter");
+    		System.out.println("The species is: " + ((Critter)pla).getName());
+    		((Critter)pla).printMem();
+    		ProgramImpl rules = (ProgramImpl)((Critter)pla).getRules();
+    		StringBuilder sb = new StringBuilder();
+    		rules.prettyPrint(sb);
+    		System.out.println("The rule set is: ");
+    		System.out.println(sb.toString());
+    		int lastIndex = ((Critter)pla).getLastRuleIndex();
+    		Rule lastRule = rules.getRule(lastIndex);
+    		sb = new StringBuilder();
+    		lastRule.prettyPrint(sb);
+    		System.out.println("The last excuted rule is: ");
+    		System.out.println(sb.toString());
+
+    		
+    	}
     }
 
     /**
