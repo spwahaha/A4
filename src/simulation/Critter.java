@@ -389,14 +389,17 @@ public class Critter implements Placeable {
 			shortSize = briSize;
 		}
 		
-		int firstRuleSeg = World.RAND.nextInt(shortSize);
-		int secondRueSeg = childRuleSize - firstRuleSeg;
-		
-		for(int i = 0; i < firstRuleSeg; i++){
-			childRules.add(shortRules.get(i));
+		for(int i = 0; i < shortSize; i++){
+			Rule temp = World.RAND.nextInt(2)==0?shortRules.get(i):
+											longRules.get(i);
+			childRules.add(temp);
 		}
-		for(int i = firstRuleSeg; i < childRuleSize; i++){
-			childRules.add(longRules.get(i));
+		
+		if(childRuleSize != shortSize){ 
+		// childRuleSize equals to long size, then add the extra part to childRule
+			for(int i = shortSize; i < longSize; i++){
+				childRules.add(longRules.get(i));
+			}
 		}
 		
 		return new ProgramImpl(childRules);

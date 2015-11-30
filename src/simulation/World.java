@@ -5,9 +5,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Random;
 
+import ast.ProgramImpl;
+import ast.Rule;
 import interpret.InterpreterImpl;
 import interpret.Outcome;
 
@@ -47,7 +50,7 @@ public class World {
 	protected int steps;
 	int size;
 	int maxSize;
-	
+	protected HashSet<Critter> dieCritters = new HashSet<Critter>();
 	public World() throws IOException{
 		loadConstant(constantFileName);
 		loadRandomWorld();
@@ -272,6 +275,10 @@ public class World {
 				System.out.println(cri.name + "     "+ outcome.getAction());
 				excuteOutcome(cri, outcome);
 			}
+			for(Critter cri:this.dieCritters){
+				this.critters.remove(cri);
+			}
+			this.dieCritters.clear();
 		}
 		steps += times;
 	}
@@ -342,7 +349,8 @@ public class World {
 	private void die(Critter cri) {
 		// TODO Auto-generated method stub
 		// remove from arraylist
-		this.critters.remove(cri);
+//		this.critters.remove(cri);
+		this.dieCritters.add(cri);
 		//become a food value = size * food_per_size
 		Food food = new Food(cri.getMem(3) * World.FOOD_PER_SIZE);
 		// update the map info
@@ -697,6 +705,114 @@ public class World {
 		if(criValid) return criBack;
 		if(briValid) return brideBack;
 		return null;
+	}
+	
+	public void printInfo(){
+    	System.out.println("The current step is NO: " + this.getSteps());
+    	System.out.println("The number of critters is: " + this.getCritterNumber());
+		int row = this.getRow() - 1;
+		int col = this.getCol() - 2;
+		int cnt1 = this.getCol() / 2 + this.getCol() % 2;
+		int cnt2 = this.getCol() / 2;
+		
+		while(col>0){
+			for(int j = col-1, k = 0; k < cnt1; k++){
+				int c = 2 * k;
+				int r = j + k;
+				HexCoord posi = new HexCoord(c,r);
+				Placeable pla = this.getObj(posi);
+//				System.out.print(posi+"  ");
+				if(pla == null) System.out.print("-   ");
+				else if(pla instanceof Rock)
+					System.out.print("#   ");
+				else if(pla instanceof Food){
+					System.out.print("f   ");
+				}
+				else if(pla instanceof Critter){
+					System.out.print(((Critter)pla).getDirection() + "   ");
+				}
+			}
+			System.out.println();
+			System.out.print("  ");		
+			if(col==1) return;
+			for(int j = col-1, k = 0; k < cnt2; k++){
+				int c = 2 * k + 1;
+				int r = j + k;
+				HexCoord posi = new HexCoord(c,r);
+				Placeable pla = this.getObj(posi);
+//				System.out.print(posi+"  ");
+				if(pla == null) System.out.print("-   ");
+				else if(pla instanceof Rock)
+					System.out.print("#   ");
+				else if(pla instanceof Food){
+					System.out.print("f   ");
+				}
+				else if(pla instanceof Critter){
+					System.out.print(((Critter)pla).getDirection() + "   ");
+				}
+			}
+			System.out.println();
+			col--;
+		}
+	}
+	
+	public void printHex(int c, int r){
+    	Placeable pla = this.getObj(new HexCoord(c,r));
+    	if(pla == null){
+    		System.out.println("Nothing is here~~");
+    		return;
+    	}
+    	
+    	if(pla instanceof Rock){
+    		System.out.println("Here is a rock");
+    		return;
+    	}
+    	
+    	if(pla instanceof Food){
+    		System.out.println("Here is some food: " + ((Food)pla).getFoodValue());
+    		return;
+    	}
+    	
+    	if(pla instanceof Critter){
+    		System.out.println("Here is a critter");
+    		System.out.println("The species is: " + ((Critter)pla).getName());
+    		((Critter)pla).printMem();
+    		ProgramImpl rules = (ProgramImpl)((Critter)pla).getRules();
+    		StringBuilder sb = new StringBuilder();
+    		rules.prettyPrint(sb);
+    		System.out.println("The rule set is: ");
+    		System.out.println(sb.toString());
+    		int lastIndex = ((Critter)pla).getLastRuleIndex();
+    		Rule lastRule = rules.getRule(lastIndex);
+    		sb = new StringBuilder();
+    		lastRule.prettyPrint(sb);
+    		System.out.println("The last excuted rule is: ");
+    		System.out.println(sb.toString());
+
+    		
+    	}
+	}
+	
+	public void loadCritter(String filename, int n){
+    	
+    	int i = n * 15;
+    	while(n > 0 && i > 0) {
+    		try {
+				Critter cri = new Critter(filename);
+				int r = this.RAND.nextInt(this.getRow());
+				int c = this.RAND.nextInt(this.getCol());
+				cri.setPosition(new HexCoord(c,r));
+				boolean succ = this.addObj(cri, cri.getPosition());
+				if(succ) n--;
+				i--;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    		
+    	}
+    	
+    	System.out.println("load over~: ");
 	}
 
 	

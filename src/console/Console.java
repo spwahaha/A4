@@ -129,24 +129,7 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	int i = n * 15;
-    	while(n > 0 && i > 0) {
-    		try {
-				Critter cri = new Critter(filename);
-				int r = this.world.RAND.nextInt(this.world.getRow());
-				int c = this.world.RAND.nextInt(this.world.getCol());
-				cri.setPosition(new HexCoord(c,r));
-				boolean succ = this.world.addObj(cri, cri.getPosition());
-				if(succ) n--;
-				i--;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    		
-    	}
-    	
-    	System.out.println("load over~: ");
+    	this.world.loadCritter(filename, n);
     }
 
     /**
@@ -172,59 +155,10 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	System.out.println("The current step is NO: " + this.world.getSteps());
-    	System.out.println("The number of critters is: " + this.world.getCritterNumber());
     	// start to draw the world map
-    	printMap();
+    	this.world.printInfo();
     }
 
-    private void printMap() {
-		// TODO Auto-generated method stub
-		int row = this.world.getRow() - 1;
-		int col = this.world.getCol() - 2;
-		int cnt1 = this.world.getCol() / 2 + this.world.getCol() % 2;
-		int cnt2 = this.world.getCol() / 2;
-		
-		while(col>0){
-			for(int j = col-1, k = 0; k < cnt1; k++){
-				int c = 2 * k;
-				int r = j + k;
-				HexCoord posi = new HexCoord(c,r);
-				Placeable pla = this.world.getObj(posi);
-//				System.out.print(posi+"  ");
-				if(pla == null) System.out.print("-   ");
-				else if(pla instanceof Rock)
-					System.out.print("#   ");
-				else if(pla instanceof Food){
-					System.out.print("f   ");
-				}
-				else if(pla instanceof Critter){
-					System.out.print(((Critter)pla).getDirection() + "   ");
-				}
-			}
-			System.out.println();
-			System.out.print("  ");		
-			if(col==1) return;
-			for(int j = col-1, k = 0; k < cnt2; k++){
-				int c = 2 * k + 1;
-				int r = j + k;
-				HexCoord posi = new HexCoord(c,r);
-				Placeable pla = this.world.getObj(posi);
-//				System.out.print(posi+"  ");
-				if(pla == null) System.out.print("-   ");
-				else if(pla instanceof Rock)
-					System.out.print("#   ");
-				else if(pla instanceof Food){
-					System.out.print("f   ");
-				}
-				else if(pla instanceof Critter){
-					System.out.print(((Critter)pla).getDirection() + "   ");
-				}
-			}
-			System.out.println();
-			col--;
-		}
-	}
 
 	/**
      * Prints description of the contents of hex (c,r).
@@ -237,40 +171,7 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	Placeable pla = this.world.getObj(new HexCoord(c,r));
-    	if(pla == null){
-    		System.out.println("Nothing is here~~");
-    		return;
-    	}
-    	
-    	if(pla instanceof Rock){
-    		System.out.println("Here is a rock");
-    		return;
-    	}
-    	
-    	if(pla instanceof Food){
-    		System.out.println("Here is some food: " + ((Food)pla).getFoodValue());
-    		return;
-    	}
-    	
-    	if(pla instanceof Critter){
-    		System.out.println("Here is a critter");
-    		System.out.println("The species is: " + ((Critter)pla).getName());
-    		((Critter)pla).printMem();
-    		ProgramImpl rules = (ProgramImpl)((Critter)pla).getRules();
-    		StringBuilder sb = new StringBuilder();
-    		rules.prettyPrint(sb);
-    		System.out.println("The rule set is: ");
-    		System.out.println(sb.toString());
-    		int lastIndex = ((Critter)pla).getLastRuleIndex();
-    		Rule lastRule = rules.getRule(lastIndex);
-    		sb = new StringBuilder();
-    		lastRule.prettyPrint(sb);
-    		System.out.println("The last excuted rule is: ");
-    		System.out.println(sb.toString());
-
-    		
-    	}
+    	this.world.printHex(c, r);
     }
 
     /**
