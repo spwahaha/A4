@@ -77,9 +77,12 @@ public class World {
 		System.out.println(this.maxSize);
 		this.size = 0;
 		int rockNumber =  (int) (this.Row * this.Col * World.RANDOM_ROCK_FACTOR);
+		System.out.println(this.Row+"  " + this.Col + "    " + World.RANDOM_ROCK_FACTOR);
+		System.out.print("put " + rockNumber +" rocks");
 		for(int i = 0; i < rockNumber; i++){
 			int r = World.RAND.nextInt(this.Row);
 			int c = World.RAND.nextInt(this.Col);
+//			System.out.println("r:" + r + "  c:" + c);
 			this.addObj(new Rock(), new HexCoord(c,r));
 		}
 	}
@@ -236,6 +239,7 @@ public class World {
 			critters.add((Critter)placeObj);
 		}
 		map.put(posi, placeObj);
+		System.out.println(posi);
 		size ++;
 		return true;
 	}
@@ -710,16 +714,41 @@ public class World {
 	public void printInfo(){
     	System.out.println("The current step is NO: " + this.getSteps());
     	System.out.println("The number of critters is: " + this.getCritterNumber());
-		int row = this.getRow() - 1;
-		int col = this.getCol() - 2;
+		int row = this.getRow() / 2;
+		int col = this.getCol() - row;
+		System.out.println("row: " + this.Row);
+		System.out.println("col: " + this.Col);
 		int cnt1 = this.getCol() / 2 + this.getCol() % 2;
 		int cnt2 = this.getCol() / 2;
 		
-		while(col>0){
-			for(int j = col-1, k = 0; k < cnt1; k++){
+		while(row>=0){
+			if(!(row==this.getRow()/2 && this.getCol() % 2 ==1)){
+				System.out.print("  ");	
+				for(int j = row + 1, k = 0; k < cnt2; k++){
+					int c = 2 * k + 1;
+					int r = j + k;
+					HexCoord posi = new HexCoord(c,r);
+//					System.out.println(posi);
+					Placeable pla = this.getObj(posi);
+//					System.out.print(posi+"  ");
+					if(pla == null) System.out.print("-   ");
+					else if(pla instanceof Rock)
+						System.out.print("#   ");
+					else if(pla instanceof Food){
+						System.out.print("f   ");
+					}
+					else if(pla instanceof Critter){
+						System.out.print(((Critter)pla).getDirection() + "   ");
+					}
+				}
+			}
+
+			System.out.println();
+			for(int j = row, k = 0; k < cnt1; k++){
 				int c = 2 * k;
 				int r = j + k;
 				HexCoord posi = new HexCoord(c,r);
+//				System.out.println(posi);
 				Placeable pla = this.getObj(posi);
 //				System.out.print(posi+"  ");
 				if(pla == null) System.out.print("-   ");
@@ -733,26 +762,7 @@ public class World {
 				}
 			}
 			System.out.println();
-			System.out.print("  ");		
-			if(col==1) return;
-			for(int j = col-1, k = 0; k < cnt2; k++){
-				int c = 2 * k + 1;
-				int r = j + k;
-				HexCoord posi = new HexCoord(c,r);
-				Placeable pla = this.getObj(posi);
-//				System.out.print(posi+"  ");
-				if(pla == null) System.out.print("-   ");
-				else if(pla instanceof Rock)
-					System.out.print("#   ");
-				else if(pla instanceof Food){
-					System.out.print("f   ");
-				}
-				else if(pla instanceof Critter){
-					System.out.print(((Critter)pla).getDirection() + "   ");
-				}
-			}
-			System.out.println();
-			col--;
+			row--;
 		}
 	}
 	
