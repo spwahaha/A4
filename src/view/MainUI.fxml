@@ -89,11 +89,16 @@
             </VBox>
             <ScrollPane fx:id="map_scrollpane" prefViewportHeight="500.0" prefViewportWidth="500.0">
                <content>
-                  <Canvas fx:id="map_canvas" height="500.0" width="500.0" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </HBox.margin>
-                  </Canvas>
+                  <Pane fx:id="pane">
+                     <children>
+                        <Canvas fx:id="object_canvas" height="500.0" width="500.0" />
+                        <Canvas fx:id="map_canvas" height="500.0" onMouseClicked="#mapClicked" width="500.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Canvas>
+                     </children>
+                  </Pane>
                </content>
             </ScrollPane>
             <VBox prefHeight="512.0" prefWidth="171.0" HBox.hgrow="ALWAYS">
