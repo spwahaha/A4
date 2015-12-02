@@ -51,20 +51,31 @@ public class World {
 	int size;
 	int maxSize;
 	protected HashSet<Critter> dieCritters = new HashSet<Critter>();
+	
+	/**
+	 * Construct a random world with some rocks in world
+	 */
 	public World() throws IOException{
+		// load the constant variable in the world from file
 		loadConstant(constantFileName);
 		loadRandomWorld();
 	}
 	
 
-
+	/** 
+	 * Construct the world from the world file
+	 * @param filename the filename of the world file,
+	 * 		  which contains the world information
+	 */ 
 	public World(String filename) throws IOException{
 		loadConstant(constantFileName);
 		loadWorldFromFile(filename);
 		System.out.println("load world successfully");
 	}
 	
-	
+	/**
+	 * Load a random word, with some rocks in the world
+	 */
 	private void loadRandomWorld() {
 		// TODO Auto-generated method stub
 		// new world with some random rocks
@@ -79,6 +90,7 @@ public class World {
 		int rockNumber =  (int) (this.Row * this.Col * World.RANDOM_ROCK_FACTOR);
 		System.out.println(this.Row+"  " + this.Col + "    " + World.RANDOM_ROCK_FACTOR);
 		System.out.print("put " + rockNumber +" rocks");
+		// pub the rock in the world
 		for(int i = 0; i < rockNumber; i++){
 			int r = World.RAND.nextInt(this.Row);
 			int c = World.RAND.nextInt(this.Col);
@@ -87,7 +99,11 @@ public class World {
 		}
 	}
 
-
+	/**
+	 * Load the world from the world file
+	 * 
+	 * @param filename the name of the file that contains the world information
+	 */
 	private void loadWorldFromFile(String filename) throws IOException {
 		// TODO Auto-generated method stub
 		this.map = new Hashtable<HexCoord,Placeable>();
@@ -102,18 +118,19 @@ public class World {
 				continue;
 			}
 			line = line.toLowerCase();
+			// set name of the world
 			if(line.startsWith("name")){
 				String name = line.substring(5, line.length());
 				this.setName(name.trim());
 			}
-			
+			// set size of the world
 			if(line.startsWith("size")){
 				String[] sizeAtr = line.split(" ");
 				int col = Integer.parseInt(sizeAtr[1]);
 				int row = Integer.parseInt(sizeAtr[2]);
 				this.setSize(col, row);
 			}
-			
+			// add rock to the world
 			if(line.startsWith("rock")){
 				String[] posiAtr = line.split(" ");
 				int col = Integer.parseInt(posiAtr[1]);
@@ -121,7 +138,7 @@ public class World {
 				HexCoord posi = new HexCoord(col, row);
 				this.addObj((new Rock()), posi);
 			}
-			
+			// add food to the world
 			if(line.startsWith("food")){
 				String[] posiAtr = line.split(" ");
 				int col = Integer.parseInt(posiAtr[1]);
@@ -130,7 +147,7 @@ public class World {
 				HexCoord posi = new HexCoord(col, row);
 				this.addObj((new Food(foodValue)), posi);
 			}
-			
+			// add critter to the world
 			if(line.startsWith("critter")){
 				String[] critterAtr = line.split(" ");
 				String critterFilename = critterAtr[1];
@@ -152,7 +169,12 @@ public class World {
 		this.size = 0;
 	}
 
-	
+	/**
+	 * Load world constant variable from file
+	 * 
+	 * @param filename the name of the file that contains the 
+	 * 				   constant variable of the world
+	 */
 	private void loadConstant(String filename) throws IOException {
 		// TODO Auto-generated method stub
 		BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -207,27 +229,54 @@ public class World {
 		
 	}
 	
+	/**
+	 * get the row number of the world
+	 * 
+	 * @return the row number of the world
+	 * 
+	 */
 	public int getRow(){
 		return this.Row;
 	}
 	
+	/**
+	 * get the column number of the world
+	 * 
+	 * @return
+	 */
 	public int getCol(){
 		return this.Col;
 	}
 	
-	
+	/**
+	 * set the world's name
+	 * 
+	 * @param name the name of the world
+	 */
 	public void setName(String name){
 		this.name = name;
 	}
 	
+	/**
+	 * Set the size of the world
+	 * 
+	 * @param col the column number of the world
+	 * @param row the row number of the world
+	 */
 	public void setSize(int col, int row){
 		this.Col = col;
 		this.Row = row;
 		this.maxSize = this.Col * this.Row / 2;
 	}
 	
-	/** add critter, food or rock in the world
-	 * if the placeObj is a critter, put it in the critter arrayList*/
+	/**
+	 * Add critter, food or rock in the world
+	 * if the placeObj is a critter, put it in the critter arrayList
+	 * 
+	 * @param placeObj the object that to be placed in the world
+	 * @param posi the position that the object to be placed
+	 * @return true if the object is placed successfully, otherwise return false
+	 */
 	public boolean addObj(Placeable placeObj, HexCoord posi){
 		if(!this.validPosi(posi)) return false; // try to place on invalid place
 		if(map.get(posi)!=null) return false; // there is something in this position posi
@@ -244,20 +293,30 @@ public class World {
 		return true;
 	}
 	
-	public void place(HexCoord posi, Placeable obj){
-		map.put(posi, obj);
-	}
-	
+	/**
+	 * Get the object at the specific location
+	 * 
+	 * @param posi the position of the object that need to be gotten
+	 * @return the object at the given location, null if there is noting
+	 */
 	public Placeable getObj(HexCoord posi){
 		return this.map.get(posi);
 	}
 	
+	/**
+	 * Get the number of object in the world
+	 * 
+	 * @return the number of the object in the world
+	 */
 	public int getObjNumber(){
 		return this.map.size();
 	}
 	
-	
-	
+	/**
+	 * Judge whether a position is valid in the world
+	 * @param posi the position to be judged
+	 * @return the validness of the position, true if the position is valid
+	 */
 	public boolean validPosi(HexCoord posi){
 		int c = posi.col;
 		int r = posi.row;
@@ -266,7 +325,12 @@ public class World {
 		return true;
 	}
 	
-	public void excute(int times){
+	/**
+	 * Execute the world for certain steps
+	 * 
+	 * @param times the step to be executed
+	 */
+	public void execute(int times){
 		int i = times;
 		while(i>0){
 			i--;
@@ -277,7 +341,7 @@ public class World {
 				Outcome outcome = interpreter.interpret();
 				if(outcome == null) continue;
 				System.out.println(cri.name + "     "+ outcome.getAction());
-				excuteOutcome(cri, outcome);
+				executeOutcome(cri, outcome);
 			}
 			for(Critter cri:this.dieCritters){
 				this.critters.remove(cri);
@@ -287,15 +351,31 @@ public class World {
 		steps += times;
 	}
 	
+	/**
+	 * Get the number of steps that world has been executed
+	 * 
+	 * @return the number of the steps that the world has been executed
+	 */
 	public int getSteps(){
 		return this.steps;
 	}
 
+	/**
+	 * Get the number of the critters in the world
+	 * 
+	 * @return the critter number
+	 */
 	public int getCritterNumber(){
 		return this.critters.size();
 	}
 
-	private void excuteOutcome(Critter cri, Outcome outcome) {
+	/**
+	 * Execute the outcome for a critter
+	 * 
+	 * @param cri the critter that executes the outcome
+	 * @param outcome the outcome action to be executed
+	 */
+	private void executeOutcome(Critter cri, Outcome outcome) {
 		// TODO Auto-generated method stub
 		String actionName = outcome.getAction().toLowerCase();
 		int value = outcome.getValue();
@@ -350,6 +430,11 @@ public class World {
 		}
 	}
 
+	/**
+	 * Make a critter die in the world
+	 * 
+	 * @param cri the critter that need to die
+	 */
 	private void die(Critter cri) {
 		// TODO Auto-generated method stub
 		// remove from arraylist
@@ -361,6 +446,11 @@ public class World {
 		this.map.put(cri.position, food);
 	}
 
+	/**
+	 * Move forward a critter
+	 * 
+	 * @param cri the critter that moves forward
+	 */
 	private void moveForward(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = World.MOVE_COST * cri.getMem(3);// cost is movecost * size
@@ -377,7 +467,11 @@ public class World {
 	} 
 
 
-
+	/**
+	 * Move back a critter
+	 * 
+	 * @param cri the critter that moves back
+	 */
 	private void moveBackward(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = World.MOVE_COST * cri.getMem(3);// cost is movecost * size
@@ -395,9 +489,16 @@ public class World {
 		moveTo(cri, backwardPosi);
 	}
 
-	private void moveTo(Critter cri, HexCoord destiny) {
+	/**
+	 * Move a critter to a certain location
+	 * 
+	 * @param cri the critter that moves 
+	 * @param destiny the location that the critter should be moved to
+	 * @return true if the critter moves successfully
+	 */
+	private boolean moveTo(Critter cri, HexCoord destiny) {
 		// TODO Auto-generated method stub
-		if(!this.validPosi(destiny)) return; // if the forward position is invalid, move unsuccessfully
+		if(!this.validPosi(destiny)) return false; // if the forward position is invalid, move unsuccessfully
 		// update energy
 		if(this.map.get(destiny) == null){
 			// if the there is nothing in the forwardposition
@@ -408,10 +509,17 @@ public class World {
 			cri.setPosition(destiny);
 			// update the world
 			this.map.put(destiny, cri);
+			cri.setPosition(destiny);
+			return true;
 		}
+		return false;
 	}
 
-
+	/**
+	 * Make a critter turn left
+	 * 
+	 * @param cri the critter that make the turn
+	 */
 	private void turnLeft(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = cri.getMem(3);// cost is size
@@ -424,8 +532,11 @@ public class World {
 		if(cri.Direction < 0) cri.Direction +=6;
 	}
 
-
-
+	/**
+	 * Make the critter turn right
+	 * 
+	 * @param cri the critter that turns right
+	 */
 	private void turnRight(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = cri.getMem(3);// cost is size
@@ -439,8 +550,11 @@ public class World {
 
 	}
 
-
-
+	/**
+	 * Execute the eat action for a critter
+	 * 
+	 * @param cri the critter that executes the eat action
+	 */
 	private void eat(Critter cri) {
 		// TODO Auto-generated method stub
 		// find the ahead info, whether there is some food
@@ -472,10 +586,14 @@ public class World {
 	}
 
 
-	/**A critter may convert some of its own energy into food added to 
+	/**
+	 * A critter may convert some of its own energy into food added to 
 	 * the hex in front of it, if that hex is either empty or already 
 	 * contains some food.
-	 * */
+	 * 
+	 * @param cri the critter that execute the action
+	 * @param value the value need to be served
+	 */
 	private void serve(Critter cri, int value) {
 		// TODO Auto-generated method stub
 		// 1 front must be food or empty to serve successfully
@@ -518,8 +636,11 @@ public class World {
 		
 	}
 
-
-
+	/**
+	 * Make a critter execute attack action
+	 * 
+	 * @param cri the critter that execute the attack action
+	 */
 	private void attack(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = World.ATTACK_COST * cri.getMem(3);// cost is attackcost * size
@@ -549,6 +670,12 @@ public class World {
 		
 	}
 	
+	/**
+	 * Calculate and get the front position of a critter
+	 * 
+	 * @param cri the critter we calculate for
+	 * @return the front position of the critter
+	 */
 	public static HexCoord getFrontPosi(Critter cri){
 		int c = cri.position.col;
 		int r = cri.position.row;
@@ -563,6 +690,12 @@ public class World {
 		return new HexCoord(c,r);
 	}
 
+	/**
+	 * Calculate and get the back position of a critter
+	 * 
+	 * @param cri the critter we calculate for
+	 * @return the back position of the critter
+	 */
 	public static HexCoord getBackPosi(Critter cri){
 		int c = cri.position.col;
 		int r = cri.position.row;
@@ -579,9 +712,12 @@ public class World {
 		return backwardPosi;
 	}
 	
-	
-
-
+	/**
+	 * Execute tag action for a critter
+	 * 
+	 * @param cri the critter that executes the tag action
+	 * @param value the value that the critter tags
+	 */
 	private void tag(Critter cri, int value) {
 		// TODO Auto-generated method stub
 		int cost = cri.getMem(3);// cost is size
@@ -602,7 +738,11 @@ public class World {
 	}
 
 
-
+	/**
+	 * Execute the grow action for a critter
+	 * 
+	 * @param cri the critter that execute the grow action
+	 */
 	private void grow(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = cri.getMem(3) * cri.getComplexity() * World.GROW_COST;
@@ -614,8 +754,11 @@ public class World {
 		cri.setMem(3, cri.getMem(3) + 1);
 	}
 
-
-
+	/**
+	 * Execute bud action for one critter
+	 * 
+	 * @param cri the critter that execute bud action
+	 */
 	private void bud(Critter cri) {
 		// TODO Auto-generated method stub
 		int cost = World.BUD_COST * cri.getComplexity();
@@ -632,13 +775,17 @@ public class World {
 		if(this.map.get(backPosi)!=null) return; 
 		 // get the child
 		Critter child = cri.bud(); 
+		child.setPosition(backPosi);
 		// update the map and critters arraylist
 		this.map.put(backPosi, child);
 		this.critters.add(child);
 	}
 
-
-
+	/**
+	 * Execute the mate action for a critter
+	 * 
+	 * @param cri the critter that execute mate action
+	 */
 	private void mate(Critter cri) {
 		// TODO Auto-generated method stub
 		// mate is different in consuming energy
@@ -670,6 +817,7 @@ public class World {
 				// finally, they can mate
 				succ = true;
 				Critter child = Critter.mate(cri, bride, childPosi, this);
+				child.setPosition(childPosi);
 				this.map.put(childPosi, child);
 				this.critters.add(child);
 			}
@@ -690,8 +838,13 @@ public class World {
 		
 	}
 
-
-
+	/**
+	 * Get and calculate the mate position for a couple of critters
+	 * 
+	 * @param cri the one critter that want to mate
+	 * @param bride the other critter that want to mate
+	 * @return the position where the child locate
+	 */
 	private HexCoord getMatePosi(Critter cri, Critter bride) {
 		// TODO Auto-generated method stub
 		HexCoord criBack = getBackPosi(cri);
@@ -711,6 +864,9 @@ public class World {
 		return null;
 	}
 	
+	/**
+	 * Print the world info
+	 */
 	public void printInfo(){
     	System.out.println("The current step is NO: " + this.getSteps());
     	System.out.println("The number of critters is: " + this.getCritterNumber());
@@ -766,6 +922,12 @@ public class World {
 		}
 	}
 	
+	/**
+	 * Print the hex info
+	 * 
+	 * @param c the column of the hex
+	 * @param r the row of the hex
+	 */
 	public void printHex(int c, int r){
     	Placeable pla = this.getObj(new HexCoord(c,r));
     	if(pla == null){
@@ -803,6 +965,12 @@ public class World {
     	}
 	}
 	
+	/**
+	 * Load critter given the filename
+	 * 
+	 * @param filename the name of file that contains the critter info
+	 * @param n the number of critters need to be loaded
+	 */
 	public void loadCritter(String filename, int n){
     	
     	int i = n * 15;
@@ -822,7 +990,7 @@ public class World {
     		
     	}
     	
-    	System.out.println("load over~: ");
+//    	System.out.println("load over~: ");
 	}
 
 	

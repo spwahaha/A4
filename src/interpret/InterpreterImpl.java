@@ -41,12 +41,12 @@ public class InterpreterImpl implements Interpreter {
 		// TODO Auto-generated method stub
 		Outcome outcome = null;
 		ArrayList<Rule> rules = ((ProgramImpl)program).getRules();
-		critter.setPass(0);
+		critter.setMem(5, 0);
 		for(int i = 0; i < World.MAX_RULES_PER_TURN; i++){
 			Rule rule = rules.get(i % rules.size());
 			outcome = InterpretRule(rule,doUpdate);
 			if(outcome==null){
-				critter.setPass(critter.getPass() + 1);
+				critter.setMem(5, critter.getMem(5) + 1);
 			}else{
 				if(doUpdate)
 					critter.setLastRule(i);
@@ -54,7 +54,7 @@ public class InterpreterImpl implements Interpreter {
 			}
 
 		}	
-		System.out.println("critter pass:" + critter.getPass());
+		System.out.println("critter pass:" + critter.getMem(5));
 		return new OutcomeImpl("wait", -1);
 	}
 	

@@ -142,7 +142,7 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	this.world.excute(n);
+    	this.world.execute(n);
     }
 
     /**

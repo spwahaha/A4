@@ -42,13 +42,21 @@ public class Critter implements Placeable {
 	protected static final int MUTATION_ATTR_CATEGORY = 3;
 	public static final int MAX_MEM_INEDX = 7;
 	
+	/**
+	 * Construct a critter with initial information
+	 */
 	public Critter(){
 		this.mem = new int[8];
 		this.name = "";
 		this.mem[3] = 1;
 	}
 	
-	
+	/**
+	 * Construct a critter given the filename that contains the critter info
+	 * 
+	 * @param fileName the name of the file that contains the critter info
+	 * @throws IOException if filename if not correct
+	 */
 	public Critter(String fileName) throws IOException{
 		
 		BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -97,25 +105,39 @@ public class Critter implements Placeable {
 		t.close();
 	}
 	
-	
-	
-	public Critter(HexCoord position, World world){
-		this.position = position;
-		this.world = world;
-	}
-	
+	/**
+	 * Set the position to the critter
+	 * 
+	 * @param posi the position of the critter
+	 */
 	public void setPosition(HexCoord posi){
 		this.position = posi;
 	}
 	
+	/**
+	 * Set the world that critter exists
+	 * 
+	 * @param world the world that critter exists
+	 */
 	public void setWorld(World world){
 		this.world = world;
 	}
 	
+	/**
+	 * Set the name of the critter
+	 * 
+	 * @param name the name of the critter
+	 */
 	public void setName(String name){
 		this.name = name;
 	}
 	
+	/**
+	 * Set the memory information for the critter
+	 * 
+	 * @param index the memory index
+	 * @param n the value of the certain memory location
+	 */
 	public void setMem(int index, int n){
 		
 		if(index < 0 || index > 7) return;
@@ -136,30 +158,50 @@ public class Critter implements Placeable {
 		
 	}
 	
+	/**
+	 * Set the program of the critter
+	 * 
+	 * @param pro the program of the critter
+	 */
 	public void setProgram(Program pro){
 		this.rules = pro;
 	}
 	
+	/**
+	 * Get the memory info of certain location
+	 * 
+	 * @param index the index of the memory info to be gotten
+	 * @return the memory info
+	 */
 	public int getMem(int index){
 		return this.mem[index];
 	}
 	
-	public int getPass(){
-		return this.mem[5];
-	}
 	
-	public void setPass(int n){
-		this.mem[5] = n;
-	}
-	
+	/**
+	 * Get the direction of the critter
+	 * 
+	 * @return the direction of the critter
+	 */
 	public int getDirection(){
 		return this.Direction;
 	}
 	
+	/**
+	 * Set the direction of the critter
+	 * 
+	 * @param dir the direction to be set
+	 */
 	public void setDirection(int dir){
 		this.Direction = dir;
 	}
 	
+	/**
+	 * Nearby sensor
+	 * 
+	 * @param dir direction to be sensed
+	 * @return the nearby information at certain dirction
+	 */
 	public int nearby(int dir){
 		int c = this.position.col;
 		int r = this.position.row;
@@ -178,6 +220,12 @@ public class Critter implements Placeable {
 		
 	}
 	
+	/**
+	 * Ahead sensor
+	 * 
+	 * @param dist the distance to sense
+	 * @return the ahead information of certain distance
+	 */
 	public int ahead(int dist){
 		int c = this.position.col;
 		int r = this.position.row;
@@ -204,6 +252,12 @@ public class Critter implements Placeable {
 
 	}
 	
+	/**
+	 * Get the world information of certain hex
+	 * 
+	 * @param posi the position to be inspected
+	 * @return the hex information
+	 */
 	private int getPosiInfo(HexCoord posi){
 		if(!this.world.validPosi(posi)) return World.ROCK_VALUE; // if it's out of world, it's a rock!!
 		Placeable place = world.getObj(posi);
@@ -220,14 +274,26 @@ public class Critter implements Placeable {
 		return 0;
 	}
 	
+	/**
+	 * Smell action
+	 * @return the smell information
+	 */
 	public int smell(){
 		return 0;
 	}
 	
+	/**
+	 * Get the name of the critters
+	 * 
+	 * @return the name of the critter
+	 */
 	public String getName(){
 		return this.name;
 	}
 	
+	/**
+	 * Print the memory information of the critter
+	 */
 	public void printMem(){
 		System.out.println("The first 8 memory is ");
 		System.out.println("Memory size: " + this.mem[0]);
@@ -240,31 +306,66 @@ public class Critter implements Placeable {
 		System.out.println("Posture: " + this.mem[7]);
 	}
 	
+	/**
+	 * Get the program of the critter
+	 * 
+	 * @return the program of the critter
+	 */
 	public Program getRules(){
 		return this.rules;
 	}
 	
+	/**
+	 * Random action
+	 * 
+	 * @param n the parameter of the random action
+	 * @return the result of random action
+	 */
 	public int random(int n){
 		if(n < 2) return 0;
 		return World.RAND.nextInt(n);
 	}
 	
+	/**
+	 * Get the appearance of the critter
+	 * 
+	 * @return the appearance
+	 */
 	public int getAppearance(){
 		return this.mem[4] * 100000 + this.mem[6] * 1000 + mem[7] * 10;
 	}
 	
+	/**
+	 * Set the last rule index executed by the critter
+	 * @param n the index of the last executed rule
+	 */
 	public void setLastRule(int n){
 		this.lastRuleIndex = n;
 	}
 	
+	/**
+	 * Get the index of the last executed rule
+	 * 
+	 * @return the index of the last executed rule
+	 */
 	public int getLastRuleIndex(){
 		return this.lastRuleIndex;
 	}
 	
+	/**
+	 * Get the position of the critter
+	 * 
+	 * @return position of the critter
+	 */
 	public HexCoord getPosition(){
 		return this.position;
 	}
 	
+	/**
+	 * Get the complexity of the critter
+	 * 
+	 * @return the complexity of the critter
+	 */
 	public int getComplexity(){
 		int r = ((ProgramImpl)this.rules).getRuleNumber();
 		int offense = this.getMem(2);
@@ -274,7 +375,11 @@ public class Critter implements Placeable {
 		return complexity;
 	}
 	
-	
+	/**
+	 * Execute the bud action
+	 * 
+	 * @return the child of the critter
+	 */
 	public Critter bud(){
 		Critter child = new Critter();
 		child.setMem(0, this.mem[0]);
@@ -297,7 +402,11 @@ public class Critter implements Placeable {
 		
 	}
 
-
+	/**
+	 * Mutate a critter
+	 * 
+	 * @param cri the critter that to be mutated
+	 */
 	private static void critterMutation(Critter cri) {
 		// TODO Auto-generated method stub
 		double prob = World.RAND.nextDouble();
@@ -322,12 +431,26 @@ public class Critter implements Placeable {
 		
 	}
 	
+	/**
+	 * Returns true if this critter want to mate
+	 * 
+	 * @return true if this critter want to mate
+	 */
 	public boolean wantMate(){
 		InterpreterImpl inter = new InterpreterImpl(this,this.rules);
 		Outcome out = inter.interpret(this.rules,false);//interpret but do not update info
 		return out.getAction().equalsIgnoreCase("mate");
 	}
 	
+	/**
+	 * Execute mate action for 2 critters
+	 * 
+	 * @param cri the one critter that want to mate
+	 * @param bride the other critter that want to mate
+	 * @param childPosi the child position 
+	 * @param world the world that these critters exist
+	 * @return child critter
+	 */
 	public static Critter mate(Critter cri, Critter bride, HexCoord childPosi, World world){
 
 		Critter child = new Critter();
@@ -365,6 +488,13 @@ public class Critter implements Placeable {
 		return child;
 	}
 	
+	/**
+	 * Get the program of the new born child
+	 * 
+	 * @param cri the father of the child
+	 * @param bride the mother of the child
+	 * @return the program of child
+	 */
 	private static Program getChildProgram(Critter cri, Critter bride){
 		ArrayList<Rule> criRules = cri.rules.getRules();
 		ArrayList<Rule> brideRules = bride.rules.getRules();

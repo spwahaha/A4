@@ -25,7 +25,7 @@ public class SimulationTester {
 	public void Worldtest() throws IOException {
 		String fileName = "examples/world.txt";
 		World world = new World(fileName);
-		world.excute(2);
+		world.execute(2);
 		System.out.println("finish excute");
 	}
 	
@@ -34,7 +34,7 @@ public class SimulationTester {
 		String fileName = "examples/waitworld.txt";
 		World world = new World(fileName);
 		int energy1 = world.critters.get(0).getMem(4);
-		world.excute(2);
+		world.execute(2);
 		int energy2 = world.critters.get(0).getMem(4);
 		assertEquals(energy1 + 2,energy2);
 		System.out.println("finish excute");
@@ -48,7 +48,7 @@ public class SimulationTester {
 		World world = new World(fileName);
 		int dir11 = world.critters.get(0).getDirection(); //3  turn left
 		int dir21 = world.critters.get(1).getDirection(); //3  turn right
-		world.excute(4);
+		world.execute(4);
 		int energy2 = world.critters.get(0).getMem(4);
 		assertEquals(5,world.critters.get(0).getDirection());
 		assertEquals(1,world.critters.get(1).getDirection());		
@@ -63,7 +63,7 @@ public class SimulationTester {
 		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 		int energy11 = world.critters.get(0).getMem(4);
 		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 
@@ -78,7 +78,7 @@ public class SimulationTester {
 		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 		int energy11 = world.critters.get(0).getMem(4);
 		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 		assertEquals(new HexCoord(4,3), world.critters.get(0).position);
@@ -96,7 +96,7 @@ public class SimulationTester {
 		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 		int energy11 = world.critters.get(0).getMem(4);
 		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}		
@@ -113,7 +113,7 @@ public class SimulationTester {
 //		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 //		int energy11 = world.critters.get(0).getMem(4);
 //		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 //		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}		
@@ -126,7 +126,7 @@ public class SimulationTester {
 //		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 //		int energy11 = world.critters.get(0).getMem(4);
 //		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 //		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}	
@@ -139,7 +139,7 @@ public class SimulationTester {
 //		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 //		int energy11 = world.critters.get(0).getMem(4);
 //		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 //		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}	
@@ -152,7 +152,7 @@ public class SimulationTester {
 //		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 //		int energy11 = world.critters.get(0).getMem(4);
 //		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 //		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}	
@@ -165,7 +165,7 @@ public class SimulationTester {
 //		int dir21 = world.critters.get(1).getDirection(); //3  turn right
 //		int energy11 = world.critters.get(0).getMem(4);
 //		int energy21 = world.critters.get(1).getMem(4); 
-		world.excute(4);
+		world.execute(4);
 //		int energy12 = world.critters.get(0).getMem(4);
 		int energy22 = world.critters.get(1).getMem(4); 
 	}	
