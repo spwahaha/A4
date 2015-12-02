@@ -7,8 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<VBox prefHeight="397.0" prefWidth="596.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox prefHeight="586.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.WorldController">
    <children>
       <HBox alignment="CENTER">
          <children>
@@ -21,9 +20,9 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </HBox>
-      <HBox prefHeight="203.0" prefWidth="500.0">
+      <HBox prefHeight="474.0" prefWidth="717.0" VBox.vgrow="ALWAYS">
          <children>
-            <VBox prefHeight="298.0" prefWidth="163.0">
+            <VBox prefHeight="512.0" prefWidth="116.0" HBox.hgrow="ALWAYS">
                <children>
                   <HBox prefHeight="35.0" prefWidth="100.0">
                      <children>
@@ -88,14 +87,18 @@
                   </TextArea>
                </children>
             </VBox>
-            <Canvas height="324.0" width="301.0">
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </Canvas>
-            <VBox prefHeight="276.0" prefWidth="171.0">
+            <ScrollPane fx:id="map_scrollpane" prefViewportHeight="500.0" prefViewportWidth="500.0">
+               <content>
+                  <Canvas fx:id="map_canvas" height="500.0" width="500.0" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </HBox.margin>
+                  </Canvas>
+               </content>
+            </ScrollPane>
+            <VBox prefHeight="512.0" prefWidth="171.0" HBox.hgrow="ALWAYS">
                <children>
-                  <HBox>
+                  <HBox alignment="CENTER">
                      <children>
                         <Label text="World:">
                            <VBox.margin>
@@ -112,7 +115,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <HBox prefHeight="49.0" prefWidth="160.0">
+                  <HBox alignment="CENTER" prefHeight="49.0" prefWidth="160.0">
                      <children>
                         <ToggleButton mnemonicParsing="false" prefWidth="65.0" text="Load">
                            <HBox.margin>
@@ -126,12 +129,12 @@
                         </ToggleButton>
                      </children>
                   </HBox>
-                  <Label text="Critter">
+                  <Label text="Critter:">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <HBox prefHeight="36.0" prefWidth="160.0">
+                  <HBox alignment="CENTER" prefHeight="36.0" prefWidth="160.0">
                      <children>
                         <Label text="Number">
                            <HBox.margin>
@@ -145,15 +148,11 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <VBox>
-                     <children>
-                        <ToggleButton alignment="TOP_RIGHT" mnemonicParsing="false" text="Load">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="70.0" right="5.0" top="5.0" />
-                           </VBox.margin>
-                        </ToggleButton>
-                     </children>
-                  </VBox>
+                  <ToggleButton mnemonicParsing="false" text="Load" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="70.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </ToggleButton>
                   <Label text="Step rate:">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -165,40 +164,48 @@
                         <Slider />
                         <ToggleButton mnemonicParsing="false" text="+" />
                      </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <ToggleButton mnemonicParsing="false" text="Step" />
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ToggleButton mnemonicParsing="false" text="Start" />
+                        <ToggleButton mnemonicParsing="false" text="Stop">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </ToggleButton>
+                     </children>
                   </HBox>
                </children>
             </VBox>
          </children>
       </HBox>
-      <HBox prefHeight="95.0" prefWidth="596.0">
+      <HBox alignment="CENTER" prefHeight="33.0" prefWidth="716.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="40.0" prefWidth="595.0">
-               <children>
-                  <Label text="Step excuted:">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </Label>
-                  <Label text="n">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </Label>
-                  <Label text="Critter number:">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="50.0" right="5.0" top="5.0" />
-                     </HBox.margin>
-                  </Label>
-                  <Label text="n">
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
-                  </Label>
-               </children>
-            </HBox>
+            <Label text="Step excuted:">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Label text="n">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Region prefHeight="200.0" prefWidth="200.0" />
+            <Label text="Critter number:">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+            <Label text="n">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
          </children>
       </HBox>
    </children>

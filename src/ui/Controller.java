@@ -86,7 +86,7 @@ public class Controller {
         assert map_pin != null : "fx:id=\"map_pin\" was not injected: check your FXML file 'airportapp.fxml'.";
         assert pin_info != null : "fx:id=\"pin_info\" was not injected: check your FXML file 'airportapp.fxml'.";
         assert zoom_slider != null : "fx:id=\"zoom_slider\" was not injected: check your FXML file 'airportapp.fxml'.";
-
+        System.out.println("initialize");
         hm.put("Byron", new ArrayList<>(Arrays.asList(1849.0, 623.0, "Code: C83\nElevation:")));
         hm.put("Gnoss Field", new ArrayList<>(Arrays.asList(558.0, 79.0, "Code: KDVO\nElevation: 2ft")));
         hm.put("Half Moon Bay", new ArrayList<>(Arrays.asList(627.0, 1172.0, "Code: KHAF\nElevation: 66ft")));
