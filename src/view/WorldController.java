@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -45,8 +46,13 @@ public class WorldController {
 	private HashMap<Position,HexCoord> PosiToHex = new HashMap<Position,HexCoord>();
 	private HashMap<HexCoord,Position> HexToPosi = new HashMap<HexCoord,Position>();
 	private ArrayList<Position> positions = new ArrayList<Position>();
+	private HashSet<HexCoord> changes = new HashSet<HexCoord>();
 	private HexCoord selectedHex = null;
 	private FileChooser fileChooser;
+	private boolean executing = false;
+	private World world;
+	private int rate;
+	
 	@FXML
 	private VBox root_vbox;
 	@FXML
@@ -66,7 +72,8 @@ public class WorldController {
 	@FXML
 	private Label foodValue_label;
 	
-	private World world;
+	
+
 	@FXML
 	void initialize(){
 		fileChooser = new FileChooser();
@@ -76,19 +83,7 @@ public class WorldController {
 		map_scrollpane.setStyle("-fx-background: #FFFFFF;");
 		System.out.print(pane);
 		map_scrollpane.setContent(pane);
-//		drawHex();
-//		drawObject();
-		
-	}
-	
-	/**
-	 * draw object in the world
-	 */
-	private void drawObject() {
-		// TODO Auto-generated method stub
-//		drawOneObj(new HexCoord(0,0),null);
-//		drawOneObj(new HexCoord(4,2),null);
-//		drawOneObj(new HexCoord(5,6),null);
+		rate=200;
 	}
 
 	/**
@@ -101,6 +96,7 @@ public class WorldController {
 	private void drawOneObj(HexCoord hex, Placeable obj) {
 		// TODO Auto-generated method stub
 		//when col is even number
+		System.out.println("draw one obj");
 		int c = hex.getCol();
 		int r = hex.getRow();
 		double x = HEX_LENGTH + c * 1.5 * HEX_LENGTH;
@@ -477,7 +473,8 @@ public class WorldController {
 			AlertInfo.invalidPositionAlert();
 			return;
 		}
-		fileChooser.setTitle("Open World file");
+		fileChooser.setTitle("Open Critter file");
+		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
 		System.out.println(root_vbox);
 		File critterFile = fileChooser.showOpenDialog(root_vbox.getScene().getWindow());
 		if(critterFile == null) return;
@@ -500,13 +497,49 @@ public class WorldController {
 	@FXML
 	void startExecute(MouseEvent e){
 		boolean validWorld = checkWorld();
-		if(validWorld){
-			while(true){
-				
+		System.out.println("start now" + validWorld);
+		if(!validWorld) return;
+		executing = true;
+		new Thread() { // Create a new background process	
+			public void run() {
+				long start = System.currentTimeMillis();
+				while(executing){
+					if(!executing) break;
+					if(rate==0) continue;
+					try {
+						
+						Thread.sleep(1000/rate);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					world.execute(1);
+					HashSet<HexCoord> worldChanges = world.getChange();
+					for(HexCoord hex:worldChanges){
+						changes.add(hex);
+					}
+				   	System.out.println("execute");    
+				   	long current = System.currentTimeMillis();
+				   	if(current - start >35){
+				   		start = current;
+				   		updateUI();
+				   		System.out.println("updateUI");
+				   	}
+				   	
+		        	
+			    }
 			}
-		}
+		}.start(); // Starts the background thread!
 
-		System.out.println("start");
+	}
+	
+	private void updateUI(){
+		Hashtable<HexCoord, Placeable> map = world.getMap();
+//		foodValue_label.setText(""+j);
+		for(HexCoord hex : changes){
+			drawOneObj(hex,map.get(hex));
+		}
+		changes.clear();
 		
 	}
 	
@@ -517,6 +550,7 @@ public class WorldController {
 	 */
 	@FXML
 	void stopExecute(MouseEvent e){
+		executing = false;
 		System.out.println("stop");
 	}
 	
@@ -542,11 +576,12 @@ public class WorldController {
 		System.out.println("step");
 		world.execute(1);
 		Hashtable<HexCoord, Placeable> map = this.world.getMap();
-		HashSet<HexCoord> changes = this.world.getChange();
+		HashSet<HexCoord> worldchange = this.world.getChange();
 		System.out.println(changes);
-		for(HexCoord hex : changes){
-			drawOneObj(hex,map.get(hex));
+		for(HexCoord hex : worldchange){
+			this.changes.add(hex);
 		}
+		updateUI();
 	}
 	
 	/**
@@ -557,8 +592,10 @@ public class WorldController {
 	@FXML
 	void loadWorld(MouseEvent e){
 		fileChooser.setTitle("Open World file");
+		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
 		System.out.println(root_vbox);
 		File worldFile = fileChooser.showOpenDialog(root_vbox.getScene().getWindow());
+		if(worldFile == null) return;
 		String absolutePath = worldFile.getAbsolutePath();
 //		String absolutePath = "D:\workspace\eclipse\12A41\examples\attackworld.txt";
 		try {

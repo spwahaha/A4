@@ -294,6 +294,7 @@ public class World {
 		if(placeObj instanceof Critter){
 			critters.add((Critter)placeObj);
 			((Critter)placeObj).position = posi;
+			((Critter)placeObj).setWorld(this);
 			System.out.println("add one critter");
 		}
 		map.put(posi, placeObj);
@@ -351,7 +352,7 @@ public class World {
 				interpreter = new InterpreterImpl(cri,cri.rules);
 				Outcome outcome = interpreter.interpret();
 				if(outcome == null) continue;
-				System.out.println(cri.name + "     "+ outcome.getAction());
+//				System.out.println(cri.name + "     "+ outcome.getAction());
 				executeOutcome(cri, outcome);
 			}
 			for(Critter cri:this.dieCritters){
