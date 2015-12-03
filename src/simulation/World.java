@@ -1,6 +1,7 @@
 package simulation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -51,6 +52,7 @@ public class World {
 	int size;
 	int maxSize;
 	protected HashSet<Critter> dieCritters = new HashSet<Critter>();
+	protected HashSet<HexCoord> changedHex = new HashSet<HexCoord>();
 	
 	/**
 	 * Construct a random world with some rocks in world
@@ -109,7 +111,11 @@ public class World {
 		this.map = new Hashtable<HexCoord,Placeable>();
 		steps = 0;
 		// read world file and many object by world file
-		BufferedReader br = new BufferedReader(new FileReader(filename));
+		File worldFile = new File(filename);
+		String absolutePath = worldFile.getAbsolutePath();
+		String path = worldFile.getParent();
+		System.out.println(path);
+		BufferedReader br = new BufferedReader(new FileReader(worldFile));
 		String line = br.readLine();
 //		World world = new World();
 		while(line!=null){
@@ -151,7 +157,7 @@ public class World {
 			if(line.startsWith("critter")){
 				String[] critterAtr = line.split(" ");
 				String critterFilename = critterAtr[1];
-				critterFilename = filename.split("/")[0] + "/" + critterFilename;
+				critterFilename = path + "/" + critterFilename;
 				int col = Integer.parseInt(critterAtr[2]);
 				int row = Integer.parseInt(critterAtr[3]);
 				int dir = Integer.parseInt(critterAtr[4]);
@@ -284,10 +290,14 @@ public class World {
 			System.out.println("The world is too crowded");
 			return false;
 		}
+		System.out.println(placeObj.getClass());
 		if(placeObj instanceof Critter){
 			critters.add((Critter)placeObj);
+			((Critter)placeObj).position = posi;
+			System.out.println("add one critter");
 		}
 		map.put(posi, placeObj);
+		changedHex.add(posi);
 		System.out.println(posi);
 		size ++;
 		return true;
@@ -332,6 +342,7 @@ public class World {
 	 */
 	public void execute(int times){
 		int i = times;
+		changedHex.clear();
 		while(i>0){
 			i--;
 			InterpreterImpl interpreter = null;
@@ -444,6 +455,7 @@ public class World {
 		Food food = new Food(cri.getMem(3) * World.FOOD_PER_SIZE);
 		// update the map info
 		this.map.put(cri.position, food);
+		changedHex.add(cri.position);
 	}
 
 	/**
@@ -480,8 +492,7 @@ public class World {
 		if(cri.getMem(4) <=0){
 			// cri die
 			// delete it from arraylist and map
-			this.critters.remove(cri);
-			this.map.remove(cri.position);
+			die(cri);
 			return;
 		}
 		
@@ -505,11 +516,13 @@ public class World {
 			// then move forward
 			// set the original position null
 			this.map.remove(cri.position);
+			changedHex.add(cri.position);
 			// update the position of critter
 			cri.setPosition(destiny);
 			// update the world
 			this.map.put(destiny, cri);
 			cri.setPosition(destiny);
+			changedHex.add(destiny);
 			return true;
 		}
 		return false;
@@ -530,6 +543,7 @@ public class World {
 		}
 		cri.Direction = (cri.Direction - 1) % World.MAX_DIRECTION;
 		if(cri.Direction < 0) cri.Direction +=6;
+		changedHex.add(cri.position);
 	}
 
 	/**
@@ -547,7 +561,7 @@ public class World {
 		}
 		cri.Direction = (cri.Direction + 1) % World.MAX_DIRECTION;
 		if(cri.Direction < 0) cri.Direction +=6;
-
+		changedHex.add(cri.position);
 	}
 
 	/**
@@ -583,6 +597,8 @@ public class World {
 			cri.setMem(4, maxEnergy);
 			food.setFoodValue(foodValue);
 		}
+		changedHex.add(cri.position);
+		changedHex.add(forwardPosi);
 	}
 
 
@@ -629,6 +645,7 @@ public class World {
 				cri.setMem(4, cri.getMem(4) - value);
 			}
 			this.map.put(frontPosi, food); // put food in the world
+			changedHex.add(frontPosi);
 			if(cri.getMem(4) <= 0){
 				die(cri);
 			}
@@ -664,6 +681,8 @@ public class World {
 		double p = 1.0/(1 + Math.exp(-x));
 		int hurt = (int) (World.BASE_DAMAGE * s1 * p);
 		victim.setMem(4, victim.getMem(4) - hurt);
+		changedHex.add(frontPosi);
+		changedHex.add(victim.position);
 		if(victim.getMem(4) <= 0){
 			die(victim);
 		}
@@ -735,6 +754,8 @@ public class World {
 		if(!(this.map.get(frontPosi) instanceof Critter)) return;
 		Critter victim = (Critter)this.map.get(frontPosi);
 		victim.setMem(6, value); // set victim tag
+		changedHex.add(cri.position);
+		changedHex.add(victim.position);
 	}
 
 
@@ -752,6 +773,7 @@ public class World {
 			return;
 		}
 		cri.setMem(3, cri.getMem(3) + 1);
+		changedHex.add(cri.position);
 	}
 
 	/**
@@ -779,6 +801,8 @@ public class World {
 		// update the map and critters arraylist
 		this.map.put(backPosi, child);
 		this.critters.add(child);
+		changedHex.add(cri.position);
+		changedHex.add(backPosi);
 	}
 
 	/**
@@ -820,6 +844,9 @@ public class World {
 				child.setPosition(childPosi);
 				this.map.put(childPosi, child);
 				this.critters.add(child);
+				changedHex.add(childPosi);
+				changedHex.add(cri.position);
+				changedHex.add(bride.position);
 			}
 			
 		}
@@ -922,47 +949,56 @@ public class World {
 		}
 	}
 	
+	public Hashtable getMap(){
+		return this.map;
+	}
+	
+	public HashSet getChange(){
+		return this.changedHex;
+	}
 	/**
 	 * Print the hex info
 	 * 
 	 * @param c the column of the hex
 	 * @param r the row of the hex
 	 */
-	public void printHex(int c, int r){
+	public StringBuilder printHex(HexCoord hex){
+		int c = hex.col;
+		int r = hex.row;
     	Placeable pla = this.getObj(new HexCoord(c,r));
     	if(pla == null){
-    		System.out.println("Nothing is here~~");
-    		return;
+//    		System.out.println("Nothing is here~~");
+    		return null;
     	}
     	
     	if(pla instanceof Rock){
     		System.out.println("Here is a rock");
-    		return;
+    		return null;
     	}
-    	
+    	StringBuilder sb = new StringBuilder();
     	if(pla instanceof Food){
     		System.out.println("Here is some food: " + ((Food)pla).getFoodValue());
-    		return;
+    		return sb.append("food: " + ((Food)pla).getFoodValue());
     	}
     	
     	if(pla instanceof Critter){
-    		System.out.println("Here is a critter");
+//    		System.out.println("Here is a critter");
     		System.out.println("The species is: " + ((Critter)pla).getName());
     		((Critter)pla).printMem();
     		ProgramImpl rules = (ProgramImpl)((Critter)pla).getRules();
-    		StringBuilder sb = new StringBuilder();
+    		sb = new StringBuilder();
     		rules.prettyPrint(sb);
-    		System.out.println("The rule set is: ");
-    		System.out.println(sb.toString());
+//    		System.out.println("The rule set is: ");
+//    		System.out.println(sb.toString());
     		int lastIndex = ((Critter)pla).getLastRuleIndex();
     		Rule lastRule = rules.getRule(lastIndex);
-    		sb = new StringBuilder();
+    		sb.append("*#*");
     		lastRule.prettyPrint(sb);
-    		System.out.println("The last excuted rule is: ");
-    		System.out.println(sb.toString());
-
-    		
+//    		System.out.println("The last excuted rule is: ");
+//    		System.out.println(sb.toString());
+    		return sb;	
     	}
+    	return null;
 	}
 	
 	/**

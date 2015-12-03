@@ -64,7 +64,7 @@ public class Critter implements Placeable {
 		for(int i = 0; i < lines.length; i++){
 			lines[i] = br.readLine();
 		}
-		
+		System.out.println(fileName);
 		String name = "";
 		int memsize =0;
 		int defense = 0;
@@ -294,16 +294,28 @@ public class Critter implements Placeable {
 	/**
 	 * Print the memory information of the critter
 	 */
-	public void printMem(){
-		System.out.println("The first 8 memory is ");
-		System.out.println("Memory size: " + this.mem[0]);
-		System.out.println("Defensive ability: " + this.mem[1]);
-		System.out.println("Offensive ability: " + this.mem[2]);
-		System.out.println("Size: " + this.mem[3]);
-		System.out.println("Energy: " + this.mem[4]);
-		System.out.println("Pass number: " + this.mem[5]);
-		System.out.println("Tag: " + this.mem[6]);
-		System.out.println("Posture: " + this.mem[7]);
+	public StringBuilder printMem(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("The first 8 memory is: ");
+		sb.append('\n');
+		sb.append("Memory size: " + this.mem[0]+'\n');
+		sb.append("Defensive ability: " + this.mem[1] + '\n');
+		sb.append("Offensive ability: " + this.mem[2] + '\n');
+		sb.append("Size: " + this.mem[3] + '\n');
+		sb.append("Energy: " + this.mem[4] + '\n');
+		sb.append("Pass number: " + this.mem[5] + '\n');
+		sb.append("Tag: " + this.mem[6] + '\n');
+		sb.append("Posture: " + this.mem[7] + '\n');
+//		System.out.println("The first 8 memory is ");
+//		System.out.println("Memory size: " + this.mem[0]);
+//		System.out.println("Defensive ability: " + this.mem[1]);
+//		System.out.println("Offensive ability: " + this.mem[2]);
+//		System.out.println("Size: " + this.mem[3]);
+//		System.out.println("Energy: " + this.mem[4]);
+//		System.out.println("Pass number: " + this.mem[5]);
+//		System.out.println("Tag: " + this.mem[6]);
+//		System.out.println("Posture: " + this.mem[7]);
+		return sb;
 	}
 	
 	/**

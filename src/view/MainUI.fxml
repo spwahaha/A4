@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<VBox prefHeight="586.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.WorldController">
+<VBox fx:id="root_vbox" prefHeight="586.0" prefWidth="777.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="view.WorldController">
    <children>
       <HBox alignment="CENTER">
          <children>
@@ -31,7 +31,7 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </Label>
-                        <Label text="i">
+                        <Label fx:id="foodValue_label" text="i">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
@@ -48,7 +48,7 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </Label>
-                        <Label text="name">
+                        <Label fx:id="critterName_Label" text="name">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
@@ -60,7 +60,7 @@
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TextArea prefHeight="83.0" prefWidth="100.0">
+                  <TextArea fx:id="critterMem_area" prefHeight="83.0" prefWidth="100.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -70,7 +70,7 @@
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TextArea prefHeight="133.0" prefWidth="100.0">
+                  <TextArea fx:id="rules_area" prefHeight="133.0" prefWidth="100.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -80,7 +80,7 @@
                         <Insets left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
-                  <TextArea prefHeight="58.0" prefWidth="144.0">
+                  <TextArea fx:id="lastExecutedRule_area" prefHeight="58.0" prefWidth="144.0">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
@@ -91,7 +91,6 @@
                <content>
                   <Pane fx:id="pane">
                      <children>
-                        <Canvas fx:id="object_canvas" height="500.0" width="500.0" />
                         <Canvas fx:id="map_canvas" height="500.0" onMouseClicked="#mapClicked" width="500.0" HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -122,16 +121,16 @@
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="49.0" prefWidth="160.0">
                      <children>
-                        <ToggleButton mnemonicParsing="false" prefWidth="65.0" text="Load">
+                        <Button mnemonicParsing="false" onMouseClicked="#loadWorld" text="Load">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
-                        </ToggleButton>
-                        <ToggleButton mnemonicParsing="false" text="Random">
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#randomWorld" text="Random">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
-                        </ToggleButton>
+                        </Button>
                      </children>
                   </HBox>
                   <Label text="Critter:">
@@ -153,11 +152,11 @@
                         </TextField>
                      </children>
                   </HBox>
-                  <ToggleButton mnemonicParsing="false" text="Load" VBox.vgrow="ALWAYS">
+                  <Button mnemonicParsing="false" onMouseClicked="#loadCritter" text="Load">
                      <VBox.margin>
                         <Insets bottom="5.0" left="70.0" right="5.0" top="5.0" />
                      </VBox.margin>
-                  </ToggleButton>
+                  </Button>
                   <Label text="Step rate:">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -173,15 +172,21 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </HBox>
-                  <ToggleButton mnemonicParsing="false" text="Step" />
+                  <Button mnemonicParsing="false" onMouseClicked="#stepExecute" text="Step">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin></Button>
                   <HBox alignment="CENTER">
                      <children>
-                        <ToggleButton mnemonicParsing="false" text="Start" />
-                        <ToggleButton mnemonicParsing="false" text="Stop">
+                        <Button mnemonicParsing="false" text="Start">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
-                        </ToggleButton>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#stopExecute" text="Stop" />
                      </children>
                   </HBox>
                </children>

@@ -171,7 +171,7 @@ public class Console {
     		System.out.println("NO WORLD NOW!!!");
     		return;
     	}
-    	this.world.printHex(c, r);
+    	this.world.printHex(new HexCoord(c,r));
     }
 
     /**
