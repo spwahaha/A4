@@ -19,4 +19,21 @@ public class AlertInfo {
 		alert.setContentText("Please select a valid hex");
 		alert.showAndWait();
 	}
+	
+	public static void invalidNumber(){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error Dialog");
+		alert.setHeaderText("Invalid number");
+		alert.setContentText("Please input a valid number");
+		alert.showAndWait();
+	}
+	
+	public static void positionToken(){
+		Alert alert = new Alert(AlertType.ERROR);
+		alert.setTitle("Error Dialog");
+		alert.setHeaderText("This position is token");
+		alert.setContentText("Please select another position");
+		alert.showAndWait();
+	}
+	
 }

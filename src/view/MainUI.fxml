@@ -12,82 +12,17 @@
       <HBox alignment="CENTER">
          <children>
             <Label text="Zoom" />
-            <ToggleButton mnemonicParsing="false" text="-" />
-            <Slider />
-            <ToggleButton mnemonicParsing="false" text="+" />
+            <Button mnemonicParsing="false" onAction="#zoomOut" text="-" />
+            <Slider fx:id="zoom_slider" />
+            <Button mnemonicParsing="false" onAction="#zoomIn" text="+" />
          </children>
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </HBox>
-      <HBox prefHeight="474.0" prefWidth="717.0" VBox.vgrow="ALWAYS">
+      <HBox alignment="TOP_CENTER" prefHeight="474.0" prefWidth="717.0" VBox.vgrow="ALWAYS">
          <children>
-            <VBox prefHeight="512.0" prefWidth="116.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <HBox prefHeight="35.0" prefWidth="100.0">
-                     <children>
-                        <Label text="Food Value:">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <Label fx:id="foodValue_label" text="i">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <HBox>
-                     <children>
-                        <Label text="Critter:">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <Label fx:id="critterName_Label" text="name">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                     </children>
-                  </HBox>
-                  <Label text="Memory">
-                     <VBox.margin>
-                        <Insets left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextArea fx:id="critterMem_area" prefHeight="83.0" prefWidth="100.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextArea>
-                  <Label text="Program">
-                     <VBox.margin>
-                        <Insets left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextArea fx:id="rules_area" prefHeight="133.0" prefWidth="100.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextArea>
-                  <Label text="Last excuted rule">
-                     <VBox.margin>
-                        <Insets left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <TextArea fx:id="lastExecutedRule_area" prefHeight="58.0" prefWidth="144.0">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </TextArea>
-               </children>
-            </VBox>
-            <ScrollPane fx:id="map_scrollpane" prefViewportHeight="500.0" prefViewportWidth="500.0">
+            <ScrollPane fx:id="map_scrollpane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefViewportHeight="500.0" prefViewportWidth="500.0" HBox.hgrow="ALWAYS">
                <content>
                   <Pane fx:id="pane">
                      <children>
@@ -99,10 +34,13 @@
                      </children>
                   </Pane>
                </content>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
             </ScrollPane>
-            <VBox prefHeight="512.0" prefWidth="171.0" HBox.hgrow="ALWAYS">
+            <VBox>
                <children>
-                  <HBox alignment="CENTER">
+                  <HBox>
                      <children>
                         <Label text="World:">
                            <VBox.margin>
@@ -112,7 +50,7 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </Label>
-                        <Label text="name">
+                        <Label fx:id="worldName_label">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
@@ -132,52 +70,115 @@
                            </HBox.margin>
                         </Button>
                      </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
                   </HBox>
-                  <Label text="Critter:">
+                  <VBox prefHeight="512.0" prefWidth="116.0">
+                     <children>
+                        <HBox prefHeight="35.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Food Value:">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="foodValue_label">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox>
+                           <children>
+                              <Label text="Critter:">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="critterName_Label">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <Label text="Memory">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextArea fx:id="critterMem_area" prefHeight="83.0" prefWidth="100.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </TextArea>
+                        <Label text="Program">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextArea fx:id="rules_area" prefHeight="133.0" prefWidth="100.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </TextArea>
+                        <Label text="Last excuted rule">
+                           <VBox.margin>
+                              <Insets left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextArea fx:id="lastExecutedRule_area" prefHeight="58.0" prefWidth="144.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </TextArea>
+                     </children>
+                  </VBox>
+                  <Label text="Load Critter:">
                      <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </VBox.margin>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="36.0" prefWidth="160.0">
                      <children>
-                        <Label text="Number">
+                        <Label text="Num:">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </Label>
-                        <TextField prefHeight="23.0" prefWidth="58.0">
+                        <TextField fx:id="critterNum_text" prefHeight="23.0" prefWidth="58.0">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <Button mnemonicParsing="false" onMouseClicked="#loadCritter" text="Load" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Step rate:">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="stepRate_text" prefHeight="23.0" prefWidth="58.0">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
                         </TextField>
                      </children>
                   </HBox>
-                  <Button mnemonicParsing="false" onMouseClicked="#loadCritter" text="Load">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="70.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Button>
-                  <Label text="Step rate:">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </Label>
                   <HBox alignment="CENTER">
                      <children>
-                        <ToggleButton mnemonicParsing="false" text="-" />
-                        <Slider />
-                        <ToggleButton mnemonicParsing="false" text="+" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Button mnemonicParsing="false" onMouseClicked="#stepExecute" text="Step">
-                     <VBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </VBox.margin></Button>
-                  <HBox alignment="CENTER">
-                     <children>
+                        <Button mnemonicParsing="false" onMouseClicked="#stepExecute" text="Step" />
                         <Button mnemonicParsing="false" onMouseClicked="#startExecute" text="Start">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -190,6 +191,9 @@
                      </children>
                   </HBox>
                </children>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
             </VBox>
          </children>
       </HBox>
@@ -200,7 +204,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Label>
-            <Label text="n">
+            <Label fx:id="executedNum_label" text="0">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
@@ -211,7 +215,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Label>
-            <Label text="n">
+            <Label fx:id="critterNum_label" text="0">
                <HBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>

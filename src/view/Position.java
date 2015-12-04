@@ -29,4 +29,5 @@ public class Position {
 		double dis2 = Math.pow((this.x - x),2) + Math.pow((this.y - y), 2);
 		return Math.sqrt(dis2);
 	}
+	
 }

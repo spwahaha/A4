@@ -10,9 +10,11 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -20,8 +22,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -43,6 +47,7 @@ public class WorldController {
 	private static double HEX_LENGTH = 30;
 	private static int ROW = 20;
 	private static int COL = 10;
+	private static int DEFAULT_RATE = 50;
 	private HashMap<Position,HexCoord> PosiToHex = new HashMap<Position,HexCoord>();
 	private HashMap<HexCoord,Position> HexToPosi = new HashMap<HexCoord,Position>();
 	private ArrayList<Position> positions = new ArrayList<Position>();
@@ -51,7 +56,7 @@ public class WorldController {
 	private FileChooser fileChooser;
 	private boolean executing = false;
 	private World world;
-	private int rate;
+	private int rate = DEFAULT_RATE;
 	
 	@FXML
 	private VBox root_vbox;
@@ -71,9 +76,20 @@ public class WorldController {
 	private TextArea critterMem_area;
 	@FXML
 	private Label foodValue_label;
+	@FXML
+	private TextField critterNum_text;
+	@FXML
+	private TextField stepRate_text;
+	@FXML
+	private Label critterNum_label;
+	@FXML
+	private Label worldName_label;
+	@FXML
+	private Label executedNum_label;
+    @FXML
+    private Slider zoom_slider;
+    Group zoomGroup;
 	
-	
-
 	@FXML
 	void initialize(){
 		fileChooser = new FileChooser();
@@ -83,8 +99,290 @@ public class WorldController {
 		map_scrollpane.setStyle("-fx-background: #FFFFFF;");
 		System.out.print(pane);
 		map_scrollpane.setContent(pane);
-		rate=200;
+		
+        zoom_slider.setMin(0.5);
+        zoom_slider.setMax(1.5);
+        zoom_slider.setValue(1.0);
+        zoom_slider.valueProperty().addListener((o, oldVal, newVal) -> zoom((Double) newVal));
+        
+        // Wrap scroll content in a Group so ScrollPane re-computes scroll bars
+        Group contentGroup = new Group();
+        zoomGroup = new Group();
+        contentGroup.getChildren().add(zoomGroup);
+        zoomGroup.getChildren().add(map_scrollpane.getContent());
+        map_scrollpane.setContent(contentGroup);
+
 	}
+	
+	
+	/**
+	 * Execute load world action,user can choose a world file
+	 * 
+	 * @param e mouse Event
+	 */
+	@FXML
+	void loadWorld(MouseEvent e){
+
+		fileChooser.setTitle("Open World file");
+		/*
+		 * change to
+		 * fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        	)
+		 */
+		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
+		System.out.println(root_vbox);
+		File worldFile = fileChooser.showOpenDialog(root_vbox.getScene().getWindow());
+		if(worldFile == null) return;
+		clearCanvas();
+		String absolutePath = worldFile.getAbsolutePath();
+//		String absolutePath = "D:\workspace\eclipse\12A41\examples\attackworld.txt";
+		try {
+			this.world = new World(absolutePath);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ROW = this.world.getRow();
+		COL = this.world.getCol();
+		drawHex();
+		Hashtable<HexCoord, Placeable> map = this.world.getMap();
+		Set<HexCoord> keys = map.keySet();
+		for(HexCoord hex : keys){
+			drawOneObj(hex,map.get(hex));
+		}
+		updateCritterNumber();
+		updateExecutedStep();
+		updateWorldName();
+		System.out.println("load world successfully ");
+	}
+	
+	
+	/**
+	 * Load a random world
+	 * @param e
+	 * @throws IOException
+	 */
+	@FXML
+	void randomWorld(MouseEvent e) throws IOException{
+		clearCanvas();
+		Hashtable<HexCoord, Placeable> map;
+		Set<HexCoord> keys;
+		this.world = new World();
+		ROW = this.world.getRow();
+		COL = this.world.getCol();
+		drawHex();
+		map = this.world.getMap();
+		keys = map.keySet();
+		for(HexCoord hex : keys){
+			drawOneObj(hex,map.get(hex));
+		}
+		
+		updateCritterNumber();
+		updateExecutedStep();
+		updateWorldName();
+		System.out.println("random world");
+	}
+	
+	/**
+	 * add critter from UI
+	 * @param e
+	 * @throws IOException
+	 */
+	@FXML
+	void loadCritter(MouseEvent e) throws IOException{
+		boolean validWorld = checkWorld();
+		if(!validWorld) return;
+		int num = getCritterNum();
+		if(num < 0) return;
+		fileChooser.setTitle("Open Critter file");
+		/*
+		 * change to
+		 * fileChooser.setInitialDirectory(
+            new File(System.getProperty("user.home"))
+        	)
+		 * 
+		 */
+		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
+		System.out.println(root_vbox);
+		File critterFile = fileChooser.showOpenDialog(root_vbox.getScene().getWindow());
+		if(critterFile == null) return;
+		String absolutePath = critterFile.getAbsolutePath();
+		Critter critter = new Critter(absolutePath);
+		HashSet<HexCoord> addPosi = this.world.loadCritter(absolutePath, num);
+		System.out.println(this.world.getCritterNumber());
+		for(HexCoord hex : addPosi){
+			drawOneObj(hex, this.world.getMap().get(hex));
+		}
+		updateCritterNumber();
+		System.out.println("load critter");
+	}
+	
+	
+	/**
+	 * handle event of clicking map
+	 * 
+	 * @param e
+	 * @throws IOException 
+	 */
+	@FXML
+	void mapClicked(MouseEvent e) throws IOException{
+		if(this.world==null) return;
+//		boolean validWorld = checkWorld();
+//		if(!validWorld) return;
+		if(e.getButton() == MouseButton.SECONDARY){
+			System.out.println("right click");
+			loadAcritter(e.getX(),e.getY());
+		}else{
+			System.out.println(e.getX() + ":    " + e.getY());
+			this.selectedHex = getSelectedHex(e.getX(), e.getY());
+			System.out.println(selectedHex);
+			if(this.selectedHex==null) return;
+			showHexInfo(this.selectedHex);
+			System.out.println(this.selectedHex);
+			System.out.println("mapclicked");
+		}
+
+	}
+	
+	
+	
+	/**
+	 * Execute step action
+	 * 
+	 * @param e
+	 */
+	@FXML
+	void stepExecute(MouseEvent e){
+		boolean validWorld = checkWorld();
+		if(!validWorld) return;
+		System.out.println("step");
+		world.execute(1);
+		Hashtable<HexCoord, Placeable> map = this.world.getMap();
+		HashSet<HexCoord> worldchange = this.world.getChange();
+		System.out.println(changes);
+		for(HexCoord hex : worldchange){
+			this.changes.add(hex);
+		}
+		updateUI();
+		updateCritterNumber();
+		updateExecutedStep();
+	}
+	
+	/**
+	 * Start world execution 
+	 * 
+	 * @param e
+	 */
+	@FXML
+	void startExecute(MouseEvent e){
+		boolean validWorld = checkWorld();
+		if(!validWorld) return;
+		System.out.println("start now" + validWorld);
+		rate = getStepRate();
+		if(rate < -1) return;
+		if(rate == -1){
+			rate = DEFAULT_RATE;
+		}
+		if(!validWorld) return;
+		executing = true;
+		if(rate==0) return;
+		new Thread() { // Create a new background process	
+			public void run() {
+				long start = System.currentTimeMillis();
+				while(executing){
+					if(!executing){
+						
+						break;
+					} 
+					if(rate==0){
+						 continue;
+						 
+					}
+					try {
+						Thread.sleep(1000/rate);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					world.execute(1);
+					HashSet<HexCoord> worldChanges = world.getChange();
+					for(HexCoord hex:worldChanges){
+						changes.add(hex);
+					}
+				   	System.out.println("execute");    
+				   	long current = System.currentTimeMillis();
+				   	if(current - start >35){
+				   		start = current;
+				   		updateUI();
+				   		System.out.println("updateUI");
+				   	}
+			        Platform.runLater(new Runnable() { // Go back to UI/application thread
+			            public void run() {
+			                // Update UI to reflect changes to the model
+			            	updateExecutedStep();
+			            	updateCritterNumber();
+			            }
+			        });
+				   	
+		        	
+			    }
+				System.out.println("jump out");
+			}
+		}.start(); // Starts the background thread!
+
+	}
+	
+	
+	/**
+	 * Stop world execution
+	 * 
+	 * @param e
+	 */
+	@FXML
+	void stopExecute(MouseEvent e){
+		boolean validWorld = checkWorld();
+		if(!validWorld) return;
+		if(executing)
+			executing = false;
+		System.out.println("stop");
+	}
+	
+	/**
+	 * Zoom in the map	
+	 * @param event
+	 */
+    @FXML
+    void zoomIn(ActionEvent event) {
+    	System.out.println("airportapp.Controller.zoomIn");
+        double sliderVal = zoom_slider.getValue();
+        zoom_slider.setValue(sliderVal += 0.1);
+    }
+
+    /**
+     * Zoom out the map
+     * @param event
+     */
+    @FXML
+    void zoomOut(ActionEvent event) {
+    	System.out.println("airportapp.Controller.zoomOut");
+        double sliderVal = zoom_slider.getValue();
+        zoom_slider.setValue(sliderVal + -0.1);
+    }
+
+    /**
+     * Execute zoom action
+     * @param scaleValue the scaleValue for map_scrollpane to scale
+     */
+    private void zoom(double scaleValue) {
+//    System.out.println("WorldController.zoom, scaleValue: " + scaleValue);
+        double scrollH = map_scrollpane.getHvalue();
+        double scrollV = map_scrollpane.getVvalue();
+        zoomGroup.setScaleX(scaleValue);
+        zoomGroup.setScaleY(scaleValue);
+        map_scrollpane.setHvalue(scrollH);
+        map_scrollpane.setVvalue(scrollV);
+    }
 
 	/**
 	 * Draw one object in the world given hexcoord 
@@ -96,24 +394,10 @@ public class WorldController {
 	private void drawOneObj(HexCoord hex, Placeable obj) {
 		// TODO Auto-generated method stub
 		//when col is even number
-		System.out.println("draw one obj");
-		int c = hex.getCol();
-		int r = hex.getRow();
-		double x = HEX_LENGTH + c * 1.5 * HEX_LENGTH;
-		int drawRol = ROW / 2;
-		double intervalY = HEX_LENGTH * Math.sqrt(3) / 2;
-		double offsetY = c % 2==0? 2 * intervalY:intervalY;
-		if(COL % 2 == 1){
-			drawRol -= c %2 == 0?0:1;
-			offsetY = c % 2==1? 2 * intervalY:intervalY;
-		}
-		double bottomY = offsetY + (drawRol)* intervalY * 2;
-		double y = bottomY - (r -((c + 1) / 2)) * intervalY * 2;
-		double radius = 20;
-		GraphicsContext gc = map_canvas.getGraphicsContext2D();
-//		System.out.println("x: " + x + "y:" + y);
-//		System.out.println("width: " + object_canvas.getWidth());
-//		System.out.println("height: " + object_canvas.getHeight());	
+		System.out.println(hex);
+		Position position = this.HexToPosi.get(hex);
+		double x = position.x;
+		double y = position.y;
 		if(obj == null){
 			drawOneHex(x,y);
 		}else if(obj instanceof Critter){
@@ -181,8 +465,9 @@ public class WorldController {
 		Color color = getPostureColor(posture);
 		gc.setFill(color);
 		int size = cri.getMem(3);
-		double r = HEX_LENGTH / 2;
-		r = r + size / 10 * HEX_LENGTH / 30;
+		double r = HEX_LENGTH / 3;
+		r = r + size/0.5;
+		r = Math.min(r, HEX_LENGTH / 3 * 2);
 		double x1 = x - r;
 		double y1 = y - r;
 		gc.fillOval(x1, y1, 2*r, 2*r);
@@ -216,7 +501,7 @@ public class WorldController {
 		// TODO Auto-generated method stub
 		double n1 = posture/10;
 		double n2 = posture%10;
-		double n3 = n1 + n2 / 2;
+		double n3 = (n1 + n2) / 2;
 		return Color.color(n1/10, n2/10, n3/10);
 	}
 
@@ -242,7 +527,7 @@ public class WorldController {
 //		int row = this.world.getRow();
 		int col = COL;
 		int row = ROW;
-		int drawRol = row / 2;
+		int drawRol = row - col/2;
 		for(int i = 0; i < col; i++){
 			if(i % 2 ==0){
 				// 0, 2, 4,... has one more hex
@@ -294,7 +579,7 @@ public class WorldController {
 		// TODO Auto-generated method stub
 		int col = COL;
 		int row = ROW;
-		int drawRol = row / 2;
+		int drawRol = row - col / 2;
 		for(int i = 0; i < col; i++){
 			if(i % 2 ==0){
 				// 0, 2, 4,... has one more hex
@@ -302,12 +587,12 @@ public class WorldController {
 				double offsetY = 2 * dy;
 				double y = 2 * dy;
 				double x = 0;
-				for(int j = 0; j <= drawRol; j++){
+				for(int j = 0; j < drawRol; j++){
 //					System.out.println(j);
 					x = (i+1) * 1.5 * HEX_LENGTH - 0.5 * HEX_LENGTH;
 					drawOneHex(x,y);
 					int hexC = i;
-					int hexR = (i+1)/2 +drawRol-j;
+					int hexR = (i+1)/2 +drawRol-j-1;
 //					System.out.println("i: " + (i) + "j: " + ((i+1)/2 +drawRol-j));
 					Position posi = new Position(x,y);
 					HexCoord hex = new HexCoord(hexC, hexR);
@@ -322,12 +607,12 @@ public class WorldController {
 				double offsetY = 2 * dy;
 				double y = dy;
 				double x = HEX_LENGTH;
-				for(int j = 0; j <= drawRol; j++){
+				for(int j = 0; j < drawRol; j++){
 					x = (i+1) * 1.5 * HEX_LENGTH - 0.5 * HEX_LENGTH;
 					drawOneHex(x,y);
 //					System.out.println("i: " + (i) + "j: " + ((i+1)/2 +drawRol-j));
 					int hexC = i;
-					int hexR = (i+1)/2 +drawRol-j;
+					int hexR = (i+1)/2 +drawRol-j -1 ;
 					Position posi = new Position(x,y);
 					HexCoord hex = new HexCoord(hexC, hexR);
 					this.PosiToHex.put(posi, hex);
@@ -349,6 +634,7 @@ public class WorldController {
 	 */
 	private void drawOneHex(double x, double y){
 //		System.out.println("x: " + x + "y: " + y);
+		// construct hexgon with counter-clock-wise
 		double x1 = x - HEX_LENGTH;
 		double x2 = x - HEX_LENGTH/2;
 		double x3 = x + HEX_LENGTH/2;
@@ -356,16 +642,16 @@ public class WorldController {
 		double x5 = x + HEX_LENGTH/2;
 		double x6 = x - HEX_LENGTH/2;
 		double y1 = y;
-		double y2 = y - HEX_LENGTH / 2 * Math.sqrt(3);
+		double y2 = y - HEX_LENGTH * Math.sqrt(3) / 2;
 		double y3 = y2;
 		double y4 = y;
-		double y5 = y + HEX_LENGTH / 2 * Math.sqrt(3);
+		double y5 = y + HEX_LENGTH * Math.sqrt(3) / 2;
 		double y6 = y5;
-		if(map_canvas.getWidth() <= x4){
+		if(map_canvas.getWidth() < x4){
 			map_canvas.setWidth(2 * x4);
 		}
-		if(map_canvas.getHeight() <= y2){
-			map_canvas.setHeight(2 * y2);
+		if(map_canvas.getHeight() < y6){
+			map_canvas.setHeight(2 * y6);
 		}
 		
 //		System.out.println(map_canvas.getWidth());
@@ -379,26 +665,7 @@ public class WorldController {
 //		System.out.println(x + ":" + y);
 	}
 	
-	/**
-	 * handle event of clicking map
-	 * 
-	 * @param e
-	 * @throws IOException 
-	 */
-	@FXML
-	void mapClicked(MouseEvent e) throws IOException{
-		if(e.getButton() == MouseButton.SECONDARY){
-			System.out.println("right click");
-			loadAcritter(e.getX(),e.getY());
-		}else{
-			System.out.println(e.getX() + ":    " + e.getY());
-			this.selectedHex = getSelectedHex(e.getX(), e.getY());
-			showHexInfo(this.selectedHex);
-			System.out.println(this.selectedHex);
-			System.out.println("mapclicked");
-		}
 
-	}
 	/**
 	 * Show the information of the selected hex
 	 * @param Hex the selected hex
@@ -473,6 +740,11 @@ public class WorldController {
 			AlertInfo.invalidPositionAlert();
 			return;
 		}
+		if(this.world.getMap().get(selectedHex)!=null){
+			AlertInfo.positionToken();
+			return;
+		}
+		
 		fileChooser.setTitle("Open Critter file");
 		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
 		System.out.println(root_vbox);
@@ -489,50 +761,30 @@ public class WorldController {
 		}
 	}
 	
-	/**
-	 * Start world execution 
-	 * 
-	 * @param e
-	 */
-	@FXML
-	void startExecute(MouseEvent e){
-		boolean validWorld = checkWorld();
-		System.out.println("start now" + validWorld);
-		if(!validWorld) return;
-		executing = true;
-		new Thread() { // Create a new background process	
-			public void run() {
-				long start = System.currentTimeMillis();
-				while(executing){
-					if(!executing) break;
-					if(rate==0) continue;
-					try {
-						
-						Thread.sleep(1000/rate);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					world.execute(1);
-					HashSet<HexCoord> worldChanges = world.getChange();
-					for(HexCoord hex:worldChanges){
-						changes.add(hex);
-					}
-				   	System.out.println("execute");    
-				   	long current = System.currentTimeMillis();
-				   	if(current - start >35){
-				   		start = current;
-				   		updateUI();
-				   		System.out.println("updateUI");
-				   	}
-				   	
-		        	
-			    }
-			}
-		}.start(); // Starts the background thread!
 
-	}
 	
+	/**
+	 * get the rate input
+	 * @return rate
+	 */
+	private int getStepRate() {
+		// TODO Auto-generated method stub
+		int number = 0;
+		try{
+			if(stepRate_text.getText().trim().equals(""))
+				return -1;
+			number = Integer.parseInt(stepRate_text.getText());
+			if(number<0) AlertInfo.invalidNumber();
+		}catch (NumberFormatException e){
+			AlertInfo.invalidNumber();
+			number = -2;
+		}
+		return number < 0?-2:number;
+	}
+
+	/**
+	 * update the canvas
+	 */
 	private void updateUI(){
 		Hashtable<HexCoord, Placeable> map = world.getMap();
 //		foodValue_label.setText(""+j);
@@ -540,19 +792,17 @@ public class WorldController {
 			drawOneObj(hex,map.get(hex));
 		}
 		changes.clear();
-		
 	}
 	
 	/**
-	 * Stop world execution
-	 * 
-	 * @param e
+	 * update the executedstep
 	 */
-	@FXML
-	void stopExecute(MouseEvent e){
-		executing = false;
-		System.out.println("stop");
+	private void updateExecutedStep() {
+		// TODO Auto-generated method stub
+		executedNum_label.setText(""+this.world.getSteps());
 	}
+
+
 	
 	/**
 	 * Check the world
@@ -565,98 +815,61 @@ public class WorldController {
 		}
 		return true;
 	}
-	
-	/**
-	 * Execute step action
-	 * 
-	 * @param e
-	 */
-	@FXML
-	void stepExecute(MouseEvent e){
-		System.out.println("step");
-		world.execute(1);
-		Hashtable<HexCoord, Placeable> map = this.world.getMap();
-		HashSet<HexCoord> worldchange = this.world.getChange();
-		System.out.println(changes);
-		for(HexCoord hex : worldchange){
-			this.changes.add(hex);
-		}
-		updateUI();
-	}
-	
-	/**
-	 * Execute load world action,user can choose a world file
-	 * 
-	 * @param e mouse Event
-	 */
-	@FXML
-	void loadWorld(MouseEvent e){
-		fileChooser.setTitle("Open World file");
-		fileChooser.setInitialDirectory(new File("D:/workspace/eclipse/12A41/examples"));
-		System.out.println(root_vbox);
-		File worldFile = fileChooser.showOpenDialog(root_vbox.getScene().getWindow());
-		if(worldFile == null) return;
-		String absolutePath = worldFile.getAbsolutePath();
-//		String absolutePath = "D:\workspace\eclipse\12A41\examples\attackworld.txt";
-		try {
-			this.world = new World(absolutePath);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ROW = this.world.getRow();
-		COL = this.world.getCol();
-		drawHex();
-		Hashtable<HexCoord, Placeable> map = this.world.getMap();
-		Set<HexCoord> keys = map.keySet();
-		for(HexCoord hex : keys){
-			drawOneObj(hex,map.get(hex));
-		}
-		
-		System.out.println("load world successfully ");
-	}
-	
-	/**
-	 * Load a random world
-	 * @param e
-	 * @throws IOException
-	 */
-	@FXML
-	void randomWorld(MouseEvent e) throws IOException{
-		Hashtable<HexCoord, Placeable> map;
-		Set<HexCoord> keys;
-		if(this.world!=null){
-			GraphicsContext gc = this.map_canvas.getGraphicsContext2D();
-			gc.fillRect(0, 0, this.map_canvas.getWidth(), this.map_canvas.getHeight());
-			map = this.world.getMap();
-			keys = map.keySet();
-			for(HexCoord hex : keys){
-				drawOneObj(hex,null);
-			}
-			
-		}
 
+	
+
+	
+	/**
+	 * update name of the world
+	 */
+	private void updateWorldName() {
+		// TODO Auto-generated method stub
+		worldName_label.setText(this.world.getName());
+	}
+
+
+	/**
+	 * Clear canvas, usually be called when load a new worlds
+	 */
+	private void clearCanvas() {
+		// TODO Auto-generated method stub
 		
-		this.world = new World();
-		ROW = this.world.getRow();
-		COL = this.world.getCol();
-		drawHex();
-		map = this.world.getMap();
-		keys = map.keySet();
-		for(HexCoord hex : keys){
-			drawOneObj(hex,map.get(hex));
+		GraphicsContext gc = this.map_canvas.getGraphicsContext2D();
+		gc.setFill(Color.WHITE);
+		gc.fillRect(0, 0, this.map_canvas.getWidth(), this.map_canvas.getHeight());
+		this.PosiToHex.clear();
+		this.HexToPosi.clear();
+	}
+
+
+	
+	/**
+	 * update the label of number of steps executed 
+	 */
+	private void updateCritterNumber() {
+		// TODO Auto-generated method stub
+		critterNum_label.setText(""+this.world.getCritterNumber());
+	}
+
+	/**
+	 * get the load critter number input
+	 * @return
+	 */
+	private int getCritterNum() {
+		// TODO Auto-generated method stub
+		int number = 0;
+		try{
+			if(critterNum_text.getText().trim().equals(""))
+				return 1;
+			number = Integer.parseInt(critterNum_text.getText());
+			if(number<0) AlertInfo.invalidNumber();
+		}catch (NumberFormatException e){
+			AlertInfo.invalidNumber();
+			number = -1;
 		}
-		
-		System.out.println("random world");
+		return number;
 	}
-	
-	@FXML
-	void loadCritter(MouseEvent e){
-		
-		System.out.println("load critter");
-	}
-	
-	
+
 	/**
 	 * Get the corresponding Hexcoord by the x,y position
 	 * 

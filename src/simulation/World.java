@@ -63,7 +63,14 @@ public class World {
 		loadRandomWorld();
 	}
 	
-
+	/**
+	 * Get name of the world
+	 * @return
+	 */
+	public String getName(){
+		return this.name;
+	}
+	
 	/** 
 	 * Construct the world from the world file
 	 * @param filename the filename of the world file,
@@ -331,6 +338,7 @@ public class World {
 	public boolean validPosi(HexCoord posi){
 		int c = posi.col;
 		int r = posi.row;
+		if( c < 0 || r < 0) return false;
 		if(c >= this.Col || r >= this.Row) return false;
 		if(2 * r - c < 0 || 2 * r - c >= 2 * this.Row - this.Col) return false;
 		return true;
@@ -476,6 +484,7 @@ public class World {
 		}
 		
 		HexCoord forwardPosi = getFrontPosi(cri);
+		if(!validPosi(forwardPosi)) return;
 		moveTo(cri, forwardPosi);
 	} 
 
@@ -498,6 +507,7 @@ public class World {
 		}
 		
 		HexCoord backwardPosi = getBackPosi(cri);
+		if(!validPosi(backwardPosi)) return;
 		moveTo(cri, backwardPosi);
 	}
 
@@ -516,6 +526,7 @@ public class World {
 			// if the there is nothing in the forwardposition
 			// then move forward
 			// set the original position null
+			System.out.println("move: " + destiny);
 			this.map.remove(cri.position);
 			changedHex.add(cri.position);
 			// update the position of critter
@@ -707,6 +718,7 @@ public class World {
 								{-1,0}};
 		c += possiblePosi[cri.Direction][0];
 		r += possiblePosi[cri.Direction][1];
+		HexCoord front = new HexCoord(c,r);
 		return new HexCoord(c,r);
 	}
 
@@ -950,11 +962,11 @@ public class World {
 		}
 	}
 	
-	public Hashtable getMap(){
+	public Hashtable<HexCoord, Placeable> getMap(){
 		return this.map;
 	}
 	
-	public HashSet getChange(){
+	public HashSet<HexCoord> getChange(){
 		return this.changedHex;
 	}
 	/**
@@ -1008,8 +1020,8 @@ public class World {
 	 * @param filename the name of file that contains the critter info
 	 * @param n the number of critters need to be loaded
 	 */
-	public void loadCritter(String filename, int n){
-    	
+	public HashSet loadCritter(String filename, int n){
+    	HashSet<HexCoord> newCritterPosi = new HashSet<HexCoord>();
     	int i = n * 15;
     	while(n > 0 && i > 0) {
     		try {
@@ -1018,7 +1030,10 @@ public class World {
 				int c = this.RAND.nextInt(this.getCol());
 				cri.setPosition(new HexCoord(c,r));
 				boolean succ = this.addObj(cri, cri.getPosition());
-				if(succ) n--;
+				if(succ){
+					newCritterPosi.add(cri.position);
+					n--;
+				} 
 				i--;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -1026,6 +1041,7 @@ public class World {
 			}
     		
     	}
+    	return newCritterPosi;
     	
 //    	System.out.println("load over~: ");
 	}
