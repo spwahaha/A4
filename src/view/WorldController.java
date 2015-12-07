@@ -151,8 +151,9 @@ public class WorldController {
 		for(HexCoord hex : keys){
 			drawOneObj(hex,map.get(hex));
 		}
-		updateCritterNumber();
-		updateExecutedStep();
+		updateUI();
+//		updateCritterNumber();
+//		updateExecutedStep();
 		updateWorldName();
 		System.out.println("load world successfully ");
 	}
@@ -178,8 +179,9 @@ public class WorldController {
 			drawOneObj(hex,map.get(hex));
 		}
 		
-		updateCritterNumber();
-		updateExecutedStep();
+		updateUI();
+//		updateCritterNumber();
+//		updateExecutedStep();
 		updateWorldName();
 		System.out.println("random world");
 	}
@@ -265,8 +267,6 @@ public class WorldController {
 			this.changes.add(hex);
 		}
 		updateUI();
-		updateCritterNumber();
-		updateExecutedStep();
 	}
 	
 	/**
@@ -312,20 +312,18 @@ public class WorldController {
 					}
 				   	System.out.println("execute");    
 				   	long current = System.currentTimeMillis();
-				   	if(current - start >35){
+
+				   	if(current - start > 35){
 				   		start = current;
-				   		updateUI();
-				   		System.out.println("updateUI");
-				   	}
-			        Platform.runLater(new Runnable() { // Go back to UI/application thread
-			            public void run() {
-			                // Update UI to reflect changes to the model
-			            	updateExecutedStep();
-			            	updateCritterNumber();
-			            }
-			        });
-				   	
-		        	
+				   		Platform.runLater(new Runnable() { // Go back to UI/application thread
+				            public void run() {
+				                // Update UI to reflect changes to the model
+						   		updateUI();
+						   		System.out.println("updateUI");
+				            }
+				        });
+				   	} 
+
 			    }
 				System.out.println("jump out");
 			}
@@ -792,6 +790,9 @@ public class WorldController {
 			drawOneObj(hex,map.get(hex));
 		}
 		changes.clear();
+		updateExecutedStep();
+		updateCritterNumber();
+		
 	}
 	
 	/**
